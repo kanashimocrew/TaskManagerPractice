@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TaskManager.Views.CalendarPage"
+             Title="Календарь задач">
+
+    <Grid x:Name="MainGrid" RowDefinitions="Auto, Auto, *">
+
+        <!-- Панель навигации по месяцам -->
+        <Grid Grid.Row="0" 
+              Padding="10"
+              ColumnDefinitions="Auto, *, Auto, Auto">
+
+            <Button x:Name="PrevMonthButton"
+                    Grid.Column="0"
+                    Text="&lt;"
+                    WidthRequest="50"
+                    HeightRequest="40"
+                    FontSize="18"
+                    CornerRadius="20"/>
+
+            <Label x:Name="MonthYearLabel"
+                   Grid.Column="1"
+                   Text="Январь 2024"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+
+            <Button x:Name="TodayButton"
+                    Grid.Column="2"
+                    Text="Сегодня"
+                    Margin="10,0"
+                    HeightRequest="40"
+                    CornerRadius="20"/>
+
+            <Button x:Name="NextMonthButton"
+                    Grid.Column="3"
+                    Text="&gt;"
+                    WidthRequest="50"
+                    HeightRequest="40"
+                    FontSize="18"
+                    CornerRadius="20"/>
+
+        </Grid>
+
+        <!-- Дни недели -->
+        <Grid Grid.Row="1"
+              Padding="10,0"
+              ColumnDefinitions="*,*,*,*,*,*,*">
+
+            <Label Grid.Column="0" Text="Пн" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="1" Text="Вт" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="2" Text="Ср" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="3" Text="Чт" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="4" Text="Пт" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="5" Text="Сб" HorizontalOptions="Center" FontAttributes="Bold" TextColor="Red"/>
+            <Label Grid.Column="6" Text="Вс" HorizontalOptions="Center" FontAttributes="Bold" TextColor="Red"/>
+
+        </Grid>
+
+        <!-- Контейнер для календаря (здесь будем создавать сетку динамически) -->
+        <ScrollView Grid.Row="2" x:Name="CalendarContainer">
+            <Grid x:Name="CalendarGrid" Margin="10" />
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>
