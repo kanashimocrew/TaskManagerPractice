@@ -3,10 +3,12 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:views="clr-namespace:TaskManager.Views"
        x:Class="TaskManager.AppShell"
-       Title="TaskManager">
+       Title="Менеджер задач"
+       FlyoutBehavior="Disabled">
 
     <ShellContent Title="Календарь"
                   ContentTemplate="{DataTemplate views:CalendarPage}"
                   Route="CalendarPage" />
+
 
 </Shell>

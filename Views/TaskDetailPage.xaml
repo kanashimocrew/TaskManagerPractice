@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:TaskManager.Converters"
+             x:Class="TaskManager.Views.TaskDetailPage"
+             Title="Просмотр задачи">
+
+    <ContentPage.Resources>
+        <converters:StatusToIconConverter x:Key="StatusToIcon" />
+        <converters:DateTimeToStringConverter x:Key="DateTimeToString" />
+        <converters:PriorityToColorConverter x:Key="PriorityToColor" />
+    </ContentPage.Resources>
+
+    <Grid>
+
+
+        <StackLayout IsVisible="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                     Padding="20" Spacing="20">
+
+
+            <Frame BackgroundColor="{Binding Task.Priority, Converter={StaticResource PriorityToColor}}"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="True">
+
+                <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto">
+
+
+                    <Label Grid.Column="0"
+                           Grid.RowSpan="3"
+                           Text="{Binding Task.Status, Converter={StaticResource StatusToIcon}}"
+                           FontSize="32"
+                           VerticalOptions="Center"
+                           Margin="0,0,15,0"/>
+
+
+                    <Label Grid.Column="1"
+                           Grid.Row="0"
+                           Text="{Binding Task.Title}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           LineBreakMode="WordWrap"/>
+
+                    <Label Grid.Column="1"
+                           Grid.Row="1"
+                           Text="{Binding Task.DueDate, Converter={StaticResource DateTimeToString}}"
+                           FontSize="14"
+                           TextColor="Gray"
+                           Margin="0,5,0,0"/>
+
+
+                    <Label Grid.Column="1"
+                           Grid.Row="2"
+                           Text="{Binding Task.Priority, Converter={StaticResource PriorityTextConverter}}"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="DarkGray"
+                           Margin="0,5,0,0"/>
+
+                </Grid>
+
+            </Frame>
+
+
+            <StackLayout>
+                <Label Text="Описание"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+
+                <Frame BackgroundColor="#F5F5F5"
+                       CornerRadius="5"
+                       Padding="15">
+
+                    <Label Text="{Binding Task.Description}"
+                           FontSize="14"
+                           LineBreakMode="WordWrap">
+
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding Task.Description}"
+                                         Value="{x:Null}">
+                                <Setter Property="Text" Value="Описание отсутствует" />
+                                <Setter Property="TextColor" Value="Gray" />
+                                <Setter Property="FontAttributes" Value="Italic" />
+                            </DataTrigger>
+                        </Label.Triggers>
+
+                    </Label>
+
+                </Frame>
+            </StackLayout>
+
+
+            <StackLayout>
+                <Label Text="Детали задачи"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+
+                <Grid ColumnDefinitions="Auto, *"
+                      RowDefinitions="Auto, Auto, Auto, Auto"
+                      Padding="10"
+                      BackgroundColor="#F5F5F5">
+
+                    <Label Grid.Column="0" Grid.Row="0"
+                           Text="Статус:"
+                           FontSize="14"
+                           TextColor="Gray"/>
+                    <Label Grid.Column="1" Grid.Row="0"
+                           Text="{Binding Task.Status, Converter={StaticResource StatusTextConverter}}"
+                           FontSize="14"
+                           FontAttributes="Bold"/>
+
+                    <Label Grid.Column="0" Grid.Row="1"
+                           Text="Создана:"
+                           FontSize="14"
+                           TextColor="Gray"/>
+                    <Label Grid.Column="1" Grid.Row="1"
+                           Text="{Binding Task.CreatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
+                           FontSize="14"/>
+
+                    <Label Grid.Column="0" Grid.Row="2"
+                           Text="Обновлена:"
+                           FontSize="14"
+                           TextColor="Gray"/>
+                    <Label Grid.Column="1" Grid.Row="2"
+                           Text="{Binding Task.UpdatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
+                           FontSize="14">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding Task.UpdatedAt}"
+                                         Value="{x:Null}">
+                                <Setter Property="Text" Value="Не обновлялась" />
+                                <Setter Property="TextColor" Value="LightGray" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Label Grid.Column="0" Grid.Row="3"
+                           Text="ID:"
+                           FontSize="14"
+                           TextColor="Gray"/>
+                    <Label Grid.Column="1" Grid.Row="3"
+                           Text="{Binding Task.Id}"
+                           FontSize="14"/>
+
+                </Grid>
+            </StackLayout>
+
+
+            <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,20,0,0">
+
+                <Button Grid.Column="0"
+                        Text="Назад"
+                        Command="{Binding GoBackCommand}"
+                        BackgroundColor="LightGray"
+                        TextColor="Black"/>
+
+                <Button Grid.Column="1"
+                        Text="Редактировать"
+                        Command="{Binding StartEditingCommand}"
+                        BackgroundColor="Orange"
+                        TextColor="White"/>
+
+                <Button Grid.Column="2"
+                        Text="Удалить"
+                        Command="{Binding DeleteTaskCommand}"
+                        BackgroundColor="Red"
+                        TextColor="White"/>
+
+            </Grid>
+
+        </StackLayout>
+
+        <StackLayout IsVisible="{Binding IsEditing}"
+                     Padding="20" Spacing="15">
+
+
+            <StackLayout>
+                <Label Text="Название *"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+
+                <Entry Text="{Binding EditTitle}"
+                       FontSize="16"
+                       ClearButtonVisibility="WhileEditing"/>
+            </StackLayout>
+
+
+            <StackLayout>
+                <Label Text="Описание"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+
+                <Editor Text="{Binding EditDescription}"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="80"
+                        FontSize="16"/>
+            </StackLayout>
+
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <StackLayout Grid.Column="0">
+                    <Label Text="Дата *"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+
+                    <DatePicker Date="{Binding EditDueDate}"
+                                FontSize="16"/>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1">
+                    <Label Text="Время"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+
+                    <TimePicker Time="{Binding EditDueTime}"
+                                FontSize="16"/>
+                </StackLayout>
+            </Grid>
+
+
+            <StackLayout>
+                <Label Text="Приоритет"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+
+                <Picker Title="Выберите приоритет"
+                        ItemsSource="{Binding PriorityOptions}"
+                        SelectedIndex="{Binding EditPriorityIndex}"
+                        FontSize="16"/>
+            </StackLayout>
+
+
+            <StackLayout>
+                <Label Text="Статус"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+
+                <Picker Title="Выберите статус"
+                        ItemsSource="{Binding StatusOptions}"
+                        SelectedIndex="{Binding EditStatusIndex}"
+                        FontSize="16"/>
+            </StackLayout>
+
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,20,0,0">
+                <Button Grid.Column="0"
+                        Text="Отмена"
+                        Command="{Binding CancelEditingCommand}"
+                        BackgroundColor="LightGray"
+                        TextColor="Black"/>
+
+                <Button Grid.Column="1"
+                        Text="Сохранить"
+                        Command="{Binding SaveChangesCommand}"
+                        BackgroundColor="{StaticResource PrimaryColor}"
+                        TextColor="White"/>
+            </Grid>
+
+        </StackLayout>
+
+    </Grid>
+
+</ContentPage>

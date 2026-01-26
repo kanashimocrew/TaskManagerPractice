@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Maui.Controls;
+using TaskManager.ViewModels;
 
 namespace TaskManager.Views
 {
@@ -14,7 +15,7 @@ namespace TaskManager.Views
             InitializeComponent();
             _currentDate = DateTime.Now;
 
-            // Назначаем обработчики событий
+
             PrevMonthButton.Clicked += OnPrevMonthClicked;
             NextMonthButton.Clicked += OnNextMonthClicked;
             TodayButton.Clicked += OnTodayClicked;
@@ -31,7 +32,7 @@ namespace TaskManager.Views
 
         private void UpdateMonthYearLabel()
         {
-            // Русские названия месяцев
+
             string[] russianMonths = {
                 "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
                 "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
@@ -48,16 +49,16 @@ namespace TaskManager.Views
             int year = _currentDate.Year;
             int month = _currentDate.Month;
 
-            // Тестовые данные для задач (в реальном приложении будет из базы данных)
+
             Dictionary<DateTime, int> taskCounts = GenerateTestTaskCounts(year, month);
 
             DateTime firstDayOfMonth = new DateTime(year, month, 1);
             DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
-            // Начинаем календарь с понедельника
+
             int firstDayOffset = ((int)firstDayOfMonth.DayOfWeek - 1 + 7) % 7;
 
-            // 1. Дни предыдущего месяца
+
             for (int i = firstDayOffset - 1; i >= 0; i--)
             {
                 DateTime date = firstDayOfMonth.AddDays(-i - 1);
@@ -71,7 +72,7 @@ namespace TaskManager.Views
                 });
             }
 
-            // 2. Дни текущего месяца
+
             for (int i = 0; i < lastDayOfMonth.Day; i++)
             {
                 DateTime date = firstDayOfMonth.AddDays(i);
@@ -85,8 +86,8 @@ namespace TaskManager.Views
                 });
             }
 
-            // 3. Дни следующего месяца (чтобы заполнить 6 недель)
-            int totalCells = 42; // 6 недель × 7 дней
+
+            int totalCells = 42; 
             int remainingCells = totalCells - _calendarDays.Count;
 
             for (int i = 1; i <= remainingCells; i++)
@@ -108,21 +109,21 @@ namespace TaskManager.Views
             Dictionary<DateTime, int> counts = new Dictionary<DateTime, int>();
             Random random = new Random();
 
-            // Добавляем задачи для некоторых дней
+
             for (int i = 0; i < 15; i++)
             {
                 int randomDay = random.Next(1, DateTime.DaysInMonth(year, month) + 1);
                 DateTime date = new DateTime(year, month, randomDay);
-                counts[date] = random.Next(1, 6); // от 1 до 5 задач
+                counts[date] = random.Next(1, 6); 
             }
 
-            // Обязательно добавляем задачи на сегодня
+
             if (year == DateTime.Now.Year && month == DateTime.Now.Month)
             {
                 counts[DateTime.Now.Date] = random.Next(1, 4);
             }
 
-            // Добавляем несколько дней с большим количеством задач для демонстрации
+
             counts[new DateTime(year, month, 5)] = 8;
             counts[new DateTime(year, month, 15)] = 12;
             counts[new DateTime(year, month, 25)] = 5;
@@ -132,12 +133,12 @@ namespace TaskManager.Views
 
         private void RenderCalendar()
         {
-            // Очищаем предыдущий календарь
+
             CalendarGrid.Children.Clear();
             CalendarGrid.RowDefinitions.Clear();
             CalendarGrid.ColumnDefinitions.Clear();
 
-            // Создаем 6 строк (недель) и 7 колонок (дней недели)
+
             for (int row = 0; row < 6; row++)
             {
                 CalendarGrid.RowDefinitions.Add(new RowDefinition { Height = 70 });
@@ -148,7 +149,6 @@ namespace TaskManager.Views
                 CalendarGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
             }
 
-            // Заполняем календарь
             for (int i = 0; i < _calendarDays.Count; i++)
             {
                 int row = i / 7;
@@ -163,7 +163,7 @@ namespace TaskManager.Views
 
         private Frame CreateDayCell(CalendarDay day)
         {
-            // Основная рамка ячейки
+
             Frame cellFrame = new Frame
             {
                 BorderColor = Color.FromArgb("#DDDDDD"),
@@ -174,7 +174,7 @@ namespace TaskManager.Views
                 Margin = new Thickness(2)
             };
 
-            // Внутренний контейнер
+
             Grid innerGrid = new Grid
             {
                 RowDefinitions =
@@ -184,7 +184,7 @@ namespace TaskManager.Views
                 }
             };
 
-            // Круг с числом дня
+
             Frame dayNumberFrame = new Frame
             {
                 CornerRadius = 20,
@@ -196,10 +196,10 @@ namespace TaskManager.Views
                 VerticalOptions = LayoutOptions.Center
             };
 
-            // Цвет фона зависит от того, сегодня ли это и текущий ли это месяц
+
             if (day.IsToday)
             {
-                dayNumberFrame.BackgroundColor = Color.FromArgb("#2196F3"); // Синий для сегодняшнего дня
+                dayNumberFrame.BackgroundColor = Color.FromArgb("#2196F3"); 
             }
             else if (day.IsCurrentMonth)
             {
@@ -207,10 +207,10 @@ namespace TaskManager.Views
             }
             else
             {
-                dayNumberFrame.BackgroundColor = Color.FromArgb("#F5F5F5"); // Светло-серый для дней других месяцев
+                dayNumberFrame.BackgroundColor = Color.FromArgb("#F5F5F5"); 
             }
 
-            // Число дня
+
             Label dayNumberLabel = new Label
             {
                 Text = day.DayNumber.ToString(),
@@ -220,24 +220,23 @@ namespace TaskManager.Views
                 FontAttributes = day.IsCurrentMonth ? FontAttributes.Bold : FontAttributes.None
             };
 
-            // Цвет текста
+
             if (!day.IsCurrentMonth)
             {
-                dayNumberLabel.TextColor = Color.FromArgb("#888888"); // Серый для дней других месяцев
+                dayNumberLabel.TextColor = Color.FromArgb("#888888"); 
             }
             else if (day.IsToday)
             {
-                dayNumberLabel.TextColor = Colors.White; // Белый для сегодняшнего дня
+                dayNumberLabel.TextColor = Colors.White; 
             }
             else
             {
-                dayNumberLabel.TextColor = Colors.Black; // Черный для остальных дней текущего месяца
+                dayNumberLabel.TextColor = Colors.Black; 
             }
 
             dayNumberFrame.Content = dayNumberLabel;
             innerGrid.Add(dayNumberFrame, 0, 0);
 
-            // Отображение количества задач
             if (day.TaskCount > 0)
             {
                 Label taskCountLabel = new Label
@@ -250,11 +249,11 @@ namespace TaskManager.Views
                     FontAttributes = FontAttributes.Bold
                 };
 
-                // Для большого количества задач показываем "9+"
+
                 if (day.TaskCount > 9)
                 {
                     taskCountLabel.Text = "9+";
-                    taskCountLabel.TextColor = Color.FromArgb("#FF5722"); // Оранжевый
+                    taskCountLabel.TextColor = Color.FromArgb("#FF5722"); 
                 }
 
                 innerGrid.Add(taskCountLabel, 0, 1);
@@ -262,27 +261,37 @@ namespace TaskManager.Views
 
             cellFrame.Content = innerGrid;
 
-            // Обработчик нажатия на ячейку
             TapGestureRecognizer tapGesture = new TapGestureRecognizer();
-            tapGesture.Tapped += (sender, e) => OnDayCellTapped(day);
+            tapGesture.Tapped += async (sender, e) => await OnDayCellTapped(day);
             cellFrame.GestureRecognizers.Add(tapGesture);
 
             return cellFrame;
         }
 
-        private async void OnDayCellTapped(CalendarDay day)
-        {
-            string monthStatus = day.IsCurrentMonth ? "текущего месяца" : "другого месяца";
-            string todayStatus = day.IsToday ? " (сегодня)" : "";
 
-            await DisplayAlert(
-                "Информация о дне",
-                $"Дата: {day.Date:dd.MM.yyyy}\n" +
-                $"День: {day.DayNumber}\n" +
-                $"Месяц: {monthStatus}{todayStatus}\n" +
-                $"Количество задач: {day.TaskCount}",
-                "OK"
-            );
+        private async Task OnDayCellTapped(CalendarDay day)
+        {
+
+            var databaseService = new Services.DatabaseService();
+            var viewModel = new TaskListViewModel(databaseService);
+            viewModel.SelectedDate = day.Date;
+
+            var taskListPage = new TaskListPage(viewModel);
+
+
+            await Navigation.PushAsync(taskListPage);
+
+            // string monthStatus = day.IsCurrentMonth ? "текущего месяца" : "другого месяца";
+            // string todayStatus = day.IsToday ? " (сегодня)" : "";
+            // 
+            // await DisplayAlert(
+            //     "Информация о дне",
+            //     $"Дата: {day.Date:dd.MM.yyyy}\n" +
+            //     $"День: {day.DayNumber}\n" +
+            //     $"Месяц: {monthStatus}{todayStatus}\n" +
+            //     $"Количество задач: {day.TaskCount}",
+            //     "OK"
+            // );
         }
 
         private void OnPrevMonthClicked(object sender, EventArgs e)
@@ -303,7 +312,6 @@ namespace TaskManager.Views
             InitializeCalendar();
         }
 
-        // Вспомогательный класс для хранения данных о дне
         private class CalendarDay
         {
             public DateTime Date { get; set; }

@@ -56,7 +56,6 @@ namespace TaskManager.ViewModels
         {
             if (day != null)
             {
-                // Навигация на страницу с задачами на выбранный день
                 await Shell.Current.GoToAsync($"{nameof(TaskListPage)}?SelectedDate={day.Date:yyyy-MM-dd}");
             }
         }
@@ -68,19 +67,14 @@ namespace TaskManager.ViewModels
             var year = CurrentDate.Year;
             var month = CurrentDate.Month;
 
-            // Получаем количество задач для каждого дня месяца
             var taskCounts = await _databaseService.GetTaskCountsForMonthAsync(year, month);
 
-            // Первый день месяца
             var firstDayOfMonth = new DateTime(year, month, 1);
-            // Последний день месяца
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
-            // Дни предыдущего месяца для заполнения сетки
             var daysInPreviousMonth = (int)firstDayOfMonth.DayOfWeek;
             var previousMonth = firstDayOfMonth.AddMonths(-1);
 
-            // Добавляем дни предыдущего месяца
             for (int i = daysInPreviousMonth - 1; i >= 0; i--)
             {
                 var date = firstDayOfMonth.AddDays(-i - 1);
@@ -93,7 +87,6 @@ namespace TaskManager.ViewModels
                 });
             }
 
-            // Добавляем дни текущего месяца
             for (int i = 0; i <= lastDayOfMonth.Day - 1; i++)
             {
                 var date = firstDayOfMonth.AddDays(i);
@@ -107,7 +100,6 @@ namespace TaskManager.ViewModels
                 });
             }
 
-            // Добавляем дни следующего месяца для завершения сетки
             var totalCells = 42; // 6 недель * 7 дней
             var remainingCells = totalCells - Days.Count;
 

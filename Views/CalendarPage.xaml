@@ -6,7 +6,7 @@
 
     <Grid x:Name="MainGrid" RowDefinitions="Auto, Auto, *">
 
-        <!-- Панель навигации по месяцам -->
+
         <Grid Grid.Row="0" 
               Padding="10"
               ColumnDefinitions="Auto, *, Auto, Auto">
@@ -44,7 +44,7 @@
 
         </Grid>
 
-        <!-- Дни недели -->
+
         <Grid Grid.Row="1"
               Padding="10,0"
               ColumnDefinitions="*,*,*,*,*,*,*">
@@ -59,7 +59,7 @@
 
         </Grid>
 
-        <!-- Контейнер для календаря (здесь будем создавать сетку динамически) -->
+
         <ScrollView Grid.Row="2" x:Name="CalendarContainer">
             <Grid x:Name="CalendarGrid" Margin="10" />
         </ScrollView>
