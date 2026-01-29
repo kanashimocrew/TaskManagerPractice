@@ -7,31 +7,24 @@ namespace TaskManager.Views
 {
     public partial class TaskEditPage : ContentPage
     {
-        public TaskEditPage(TaskEditViewModel viewModel)
+        public TaskEditPage(DateTime? selectedDate = null, int? taskId = null)
         {
             InitializeComponent();
-            BindingContext = viewModel;
+
+            if (BindingContext is TaskEditViewModel viewModel)
+            {
+                viewModel.Initialize(taskId, selectedDate);
+            }
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            if (BindingContext is TaskEditViewModel viewModel)
+            if (BindingContext is TaskEditViewModel viewModel && viewModel.IsNewTask)
             {
-
-                var parameters = GetNavigationParameters();
-
-                if (parameters != null)
-                {
-                    int? taskId = parameters.ContainsKey("TaskId") ?
-                        (int)parameters["TaskId"] : null;
-
-                    DateTime? selectedDate = parameters.ContainsKey("SelectedDate") ?
-                        (DateTime)parameters["SelectedDate"] : null;
-
-                    viewModel.Initialize(taskId, selectedDate);
-                }
+                viewModel.UpdatePageTitle();
+                viewModel.UpdateSaveButtonText();
             }
         }
 

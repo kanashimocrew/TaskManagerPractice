@@ -87,10 +87,10 @@ namespace TaskManager.ViewModels
 
         public int EditPriorityIndex
         {
-            get => (int)EditPriority - 1; 
+            get => (int)EditPriority - 1;
             set
             {
-                if (value >= 0 && value < PriorityOptions?.Count)
+                if (value >= 0 && value < 3)
                 {
                     EditPriority = (TaskPriority)(value + 1);
                 }
@@ -102,7 +102,7 @@ namespace TaskManager.ViewModels
             get => (int)EditStatus;
             set
             {
-                if (value >= 0 && value < StatusOptions?.Count)
+                if (value >= 0 && value < 4)
                 {
                     EditStatus = (Models.TaskStatus)value;
                 }
@@ -116,6 +116,10 @@ namespace TaskManager.ViewModels
         public ICommand DeleteTaskCommand { get; }
         public ICommand GoBackCommand { get; }
 
+        public TaskDetailViewModel() : this(new DatabaseService())
+        {
+        }
+
         public TaskDetailViewModel(IDatabaseService databaseService)
         {
             _databaseService = databaseService;
@@ -128,6 +132,11 @@ namespace TaskManager.ViewModels
             SaveChangesCommand = new Command(async () => await SaveChanges());
             DeleteTaskCommand = new Command(async () => await DeleteTask());
             GoBackCommand = new Command(async () => await GoBack());
+        }
+
+        public void Initialize(int taskId)
+        {
+            LoadTaskCommand.Execute(taskId);
         }
 
         private void InitializeOptions()
@@ -266,7 +275,7 @@ namespace TaskManager.ViewModels
 
                     MessagingCenter.Send(this, "TaskDeleted", Task.DueDate.Date);
 
-                    await Shell.Current.GoToAsync("..");
+                    await NavigationService.GoBack();
                 }
                 catch (Exception ex)
                 {
@@ -291,7 +300,7 @@ namespace TaskManager.ViewModels
                 }
             }
 
-            await Shell.Current.GoToAsync("..");
+            await NavigationService.GoBack();
         }
 
         private bool HasChanges()
@@ -304,11 +313,6 @@ namespace TaskManager.ViewModels
                    EditDueTime != _originalTask.DueDate.TimeOfDay ||
                    EditPriority != _originalTask.Priority ||
                    EditStatus != _originalTask.Status;
-        }
-
-        public void Initialize(int taskId)
-        {
-            LoadTaskCommand.Execute(taskId);
         }
     }
 }

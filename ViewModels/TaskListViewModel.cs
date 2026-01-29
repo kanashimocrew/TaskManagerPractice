@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using TaskManager.Models;
 using TaskManager.Services;
-using TaskManager.Views;
 
 namespace TaskManager.ViewModels
 {
@@ -64,6 +63,11 @@ namespace TaskManager.ViewModels
         public ICommand ChangeStatusCommand { get; }
         public ICommand NavigateToCreateTaskCommand { get; }
         public ICommand NavigateToTaskDetailCommand { get; }
+
+
+        public TaskListViewModel() : this(new DatabaseService())
+        {
+        }
 
         public TaskListViewModel(IDatabaseService databaseService)
         {
@@ -188,13 +192,21 @@ namespace TaskManager.ViewModels
 
         private async Task NavigateToCreateTask()
         {
-            await Services.NavigationService.NavigateToCreateTask(SelectedDate);
+            try
+            {
+                await Services.NavigationService.NavigateToCreateTask(SelectedDate);
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка",
+                    $"Не удалось перейти к созданию задачи: {ex.Message}", "OK");
+            }
         }
 
         private async Task NavigateToTaskDetail(TaskItem task)
         {
             if (task == null) return;
-            await Services.NavigationService.NavigateToTaskDetail(task.Id);
+            await NavigationService.NavigateToTaskDetail(task.Id);
         }
     }
 }

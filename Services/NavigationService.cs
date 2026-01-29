@@ -6,37 +6,45 @@ namespace TaskManager.Services
 {
     public static class NavigationService
     {
+        private static INavigation GetNavigation()
+        {
+            if (Application.Current?.MainPage is NavigationPage navPage)
+                return navPage.Navigation;
+
+            return Application.Current?.MainPage?.Navigation;
+        }
+
+        public static async Task GoBack()
+        {
+            var navigation = GetNavigation();
+            if (navigation != null)
+            {
+                await navigation.PopAsync();
+            }
+        }
+
         public static async Task NavigateToCreateTask(DateTime selectedDate)
         {
             try
             {
-                Console.WriteLine($"NavigationService: Начинаем навигацию для даты {selectedDate}");
+                var navigation = GetNavigation();
+                if (navigation == null) return;
 
-                
-                var currentPage = GetCurrentPage();
-                if (currentPage == null)
-                {
-                    Console.WriteLine("NavigationService: Текущая страница не найдена");
-                    return;
-                }
-
-                Console.WriteLine($"NavigationService: Текущая страница: {currentPage.GetType().Name}");
-
-                
                 var databaseService = new DatabaseService();
+
                 var viewModel = new TaskEditViewModel(databaseService);
+
                 viewModel.Initialize(null, selectedDate);
 
-                var editPage = new TaskEditPage(viewModel);
+                var editPage = new TaskEditPage()
+                {
+                    BindingContext = viewModel
+                };
 
-                
-                await currentPage.Navigation.PushAsync(editPage);
-
-                Console.WriteLine("NavigationService: Навигация успешно завершена");
+                await navigation.PushAsync(editPage);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"NavigationService Ошибка: {ex}");
                 await ShowAlert($"Ошибка навигации: {ex.Message}");
             }
         }
@@ -45,15 +53,13 @@ namespace TaskManager.Services
         {
             try
             {
-                var currentPage = GetCurrentPage();
-                if (currentPage == null) return;
+                var navigation = GetNavigation();
+                if (navigation == null) return;
 
-                var databaseService = new DatabaseService();
-                var viewModel = new TaskDetailViewModel(databaseService);
-                viewModel.Initialize(taskId);
+                // Используем альтернативный конструктор
+                var detailPage = new TaskDetailPage(taskId);
 
-                var detailPage = new TaskDetailPage(viewModel);
-                await currentPage.Navigation.PushAsync(detailPage);
+                await navigation.PushAsync(detailPage);
             }
             catch (Exception ex)
             {
@@ -61,29 +67,13 @@ namespace TaskManager.Services
             }
         }
 
-        private static Page GetCurrentPage()
-        {
-            if (Application.Current?.MainPage == null)
-                return null;
-
-            
-            if (Application.Current.MainPage is NavigationPage navPage)
-            {
-                return navPage.CurrentPage;
-            }
-
-            
-            return Application.Current.MainPage;
-        }
-
         private static async Task ShowAlert(string message)
         {
             try
             {
-                var currentPage = GetCurrentPage();
-                if (currentPage != null)
+                if (Application.Current?.MainPage != null)
                 {
-                    await currentPage.DisplayAlert("Ошибка", message, "OK");
+                    await Application.Current.MainPage.DisplayAlert("Ошибка", message, "OK");
                 }
             }
             catch

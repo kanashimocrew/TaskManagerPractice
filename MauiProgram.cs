@@ -16,16 +16,13 @@ namespace TaskManager
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialDesignIcons");
                 });
 
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
 
-
             builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
-
 
             builder.Services.AddTransient<CalendarViewModel>();
             builder.Services.AddTransient<TaskListViewModel>();

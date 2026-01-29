@@ -2,9 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:TaskManager.Converters"
+             xmlns:viewmodels="clr-namespace:TaskManager.ViewModels"
              x:Class="TaskManager.Views.TaskDetailPage"
              Title="Просмотр задачи">
 
+    <ContentPage.BindingContext>
+        <viewmodels:TaskDetailViewModel />
+    </ContentPage.BindingContext>
+    
+    
     <ContentPage.Resources>
         <converters:StatusToIconConverter x:Key="StatusToIcon" />
         <converters:DateTimeToStringConverter x:Key="DateTimeToString" />

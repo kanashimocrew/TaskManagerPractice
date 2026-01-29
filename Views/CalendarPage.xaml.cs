@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Maui.Controls;
+using TaskManager.Services;
 using TaskManager.ViewModels;
 
 namespace TaskManager.Views
@@ -9,12 +10,13 @@ namespace TaskManager.Views
     {
         private DateTime _currentDate;
         private List<CalendarDay> _calendarDays = new List<CalendarDay>();
+        private DatabaseService _databaseService;
 
         public CalendarPage()
         {
             InitializeComponent();
             _currentDate = DateTime.Now;
-
+            _databaseService = new DatabaseService(); 
 
             PrevMonthButton.Clicked += OnPrevMonthClicked;
             NextMonthButton.Clicked += OnNextMonthClicked;
@@ -23,16 +25,17 @@ namespace TaskManager.Views
             InitializeCalendar();
         }
 
-        private void InitializeCalendar()
+        private async 
+        Task
+InitializeCalendar()
         {
             UpdateMonthYearLabel();
-            LoadCalendarData();
+            await LoadCalendarData(); 
             RenderCalendar();
         }
 
         private void UpdateMonthYearLabel()
         {
-
             string[] russianMonths = {
                 "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
                 "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
@@ -42,22 +45,19 @@ namespace TaskManager.Views
             MonthYearLabel.Text = $"{russianMonths[monthIndex]} {_currentDate.Year}";
         }
 
-        private void LoadCalendarData()
+        private async Task LoadCalendarData()
         {
             _calendarDays.Clear();
 
             int year = _currentDate.Year;
             int month = _currentDate.Month;
 
-
-            Dictionary<DateTime, int> taskCounts = GenerateTestTaskCounts(year, month);
+            Dictionary<DateTime, int> taskCounts = await _databaseService.GetTaskCountsForMonthAsync(year, month);
 
             DateTime firstDayOfMonth = new DateTime(year, month, 1);
             DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
-
             int firstDayOffset = ((int)firstDayOfMonth.DayOfWeek - 1 + 7) % 7;
-
 
             for (int i = firstDayOffset - 1; i >= 0; i--)
             {
@@ -72,7 +72,6 @@ namespace TaskManager.Views
                 });
             }
 
-
             for (int i = 0; i < lastDayOfMonth.Day; i++)
             {
                 DateTime date = firstDayOfMonth.AddDays(i);
@@ -85,7 +84,6 @@ namespace TaskManager.Views
                     TaskCount = taskCounts.ContainsKey(date) ? taskCounts[date] : 0
                 });
             }
-
 
             int totalCells = 42; 
             int remainingCells = totalCells - _calendarDays.Count;
@@ -104,32 +102,7 @@ namespace TaskManager.Views
             }
         }
 
-        private Dictionary<DateTime, int> GenerateTestTaskCounts(int year, int month)
-        {
-            Dictionary<DateTime, int> counts = new Dictionary<DateTime, int>();
-            Random random = new Random();
 
-
-            for (int i = 0; i < 15; i++)
-            {
-                int randomDay = random.Next(1, DateTime.DaysInMonth(year, month) + 1);
-                DateTime date = new DateTime(year, month, randomDay);
-                counts[date] = random.Next(1, 6); 
-            }
-
-
-            if (year == DateTime.Now.Year && month == DateTime.Now.Month)
-            {
-                counts[DateTime.Now.Date] = random.Next(1, 4);
-            }
-
-
-            counts[new DateTime(year, month, 5)] = 8;
-            counts[new DateTime(year, month, 15)] = 12;
-            counts[new DateTime(year, month, 25)] = 5;
-
-            return counts;
-        }
 
         private void RenderCalendar()
         {
@@ -137,7 +110,6 @@ namespace TaskManager.Views
             CalendarGrid.Children.Clear();
             CalendarGrid.RowDefinitions.Clear();
             CalendarGrid.ColumnDefinitions.Clear();
-
 
             for (int row = 0; row < 6; row++)
             {
@@ -148,6 +120,7 @@ namespace TaskManager.Views
             {
                 CalendarGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
             }
+
 
             for (int i = 0; i < _calendarDays.Count; i++)
             {
@@ -210,7 +183,6 @@ namespace TaskManager.Views
                 dayNumberFrame.BackgroundColor = Color.FromArgb("#F5F5F5"); 
             }
 
-
             Label dayNumberLabel = new Label
             {
                 Text = day.DayNumber.ToString(),
@@ -220,10 +192,9 @@ namespace TaskManager.Views
                 FontAttributes = day.IsCurrentMonth ? FontAttributes.Bold : FontAttributes.None
             };
 
-
             if (!day.IsCurrentMonth)
             {
-                dayNumberLabel.TextColor = Color.FromArgb("#888888"); 
+                dayNumberLabel.TextColor = Color.FromArgb("#888888");
             }
             else if (day.IsToday)
             {
@@ -249,7 +220,6 @@ namespace TaskManager.Views
                     FontAttributes = FontAttributes.Bold
                 };
 
-
                 if (day.TaskCount > 9)
                 {
                     taskCountLabel.Text = "9+";
@@ -268,48 +238,44 @@ namespace TaskManager.Views
             return cellFrame;
         }
 
-
         private async Task OnDayCellTapped(CalendarDay day)
         {
+            try
+            {
 
-            var databaseService = new Services.DatabaseService();
-            var viewModel = new TaskListViewModel(databaseService);
-            viewModel.SelectedDate = day.Date;
+                var taskListPage = new TaskListPage();
 
-            var taskListPage = new TaskListPage(viewModel);
+                if (taskListPage.BindingContext is TaskListViewModel viewModel)
+                {
+                    viewModel.SelectedDate = day.Date;
+                }
 
+                taskListPage.Title = $"Задачи на {day.Date:dd.MM.yyyy}";
 
-            await Navigation.PushAsync(taskListPage);
-
-            // string monthStatus = day.IsCurrentMonth ? "текущего месяца" : "другого месяца";
-            // string todayStatus = day.IsToday ? " (сегодня)" : "";
-            // 
-            // await DisplayAlert(
-            //     "Информация о дне",
-            //     $"Дата: {day.Date:dd.MM.yyyy}\n" +
-            //     $"День: {day.DayNumber}\n" +
-            //     $"Месяц: {monthStatus}{todayStatus}\n" +
-            //     $"Количество задач: {day.TaskCount}",
-            //     "OK"
-            // );
+                await Navigation.PushAsync(taskListPage);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", $"Не удалось перейти: {ex.Message}", "OK");
+            }
         }
 
-        private void OnPrevMonthClicked(object sender, EventArgs e)
+        private async void OnPrevMonthClicked(object sender, EventArgs e)
         {
             _currentDate = _currentDate.AddMonths(-1);
-            InitializeCalendar();
+            await InitializeCalendar(); 
         }
 
-        private void OnNextMonthClicked(object sender, EventArgs e)
+        private async void OnNextMonthClicked(object sender, EventArgs e)
         {
             _currentDate = _currentDate.AddMonths(1);
-            InitializeCalendar();
+            await InitializeCalendar(); 
         }
 
-        private void OnTodayClicked(object sender, EventArgs e)
+        private async void OnTodayClicked(object sender, EventArgs e)
         {
             _currentDate = DateTime.Now;
-            InitializeCalendar();
+            await InitializeCalendar();
         }
 
         private class CalendarDay

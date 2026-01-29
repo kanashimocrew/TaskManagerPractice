@@ -5,10 +5,14 @@ namespace TaskManager.Views
 {
     public partial class TaskDetailPage : ContentPage
     {
-        public TaskDetailPage(TaskDetailViewModel viewModel)
+        public TaskDetailPage(int taskId)
         {
             InitializeComponent();
-            BindingContext = viewModel;
+
+            if (BindingContext is TaskDetailViewModel viewModel)
+            {
+                viewModel.Initialize(taskId);
+            }
         }
 
         protected override void OnAppearing()
