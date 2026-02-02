@@ -5,18 +5,12 @@ namespace TaskManager.Views
 {
     public partial class TaskListPage : ContentPage
     {
-        public TaskListPage()
+        private readonly DateTime _selectedDate;
+
+        public TaskListPage(DateTime selectedDate)
         {
             InitializeComponent();
-        }
-
-        public TaskListPage(DateTime selectedDate) : this()
-        {
-
-            if (BindingContext is TaskListViewModel viewModel)
-            {
-                viewModel.SelectedDate = selectedDate;
-            }
+            _selectedDate = selectedDate;
 
             Title = $"Задачи на {selectedDate:dd.MM.yyyy}";
         }
@@ -27,6 +21,12 @@ namespace TaskManager.Views
 
             if (BindingContext is TaskListViewModel viewModel)
             {
+
+                if (viewModel.SelectedDate.Date != _selectedDate.Date)
+                {
+                    viewModel.SelectedDate = _selectedDate;
+                }
+
                 viewModel.LoadTasksCommand.Execute(null);
             }
         }

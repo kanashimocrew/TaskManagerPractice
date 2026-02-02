@@ -4,9 +4,7 @@
              x:Class="TaskManager.Views.CalendarPage"
              Title="Календарь задач">
 
-    <Grid x:Name="MainGrid" RowDefinitions="Auto, Auto, *">
-
-
+    <Grid RowDefinitions="Auto, Auto, *">
         <Grid Grid.Row="0" 
               Padding="10"
               ColumnDefinitions="Auto, *, Auto, Auto">
@@ -43,8 +41,7 @@
                     CornerRadius="20"/>
 
         </Grid>
-
-
+        
         <Grid Grid.Row="1"
               Padding="10,0"
               ColumnDefinitions="*,*,*,*,*,*,*">
@@ -59,10 +56,19 @@
 
         </Grid>
 
+        <CollectionView x:Name="CalendarCollectionView"
+                        Grid.Row="2"
+                        SelectionMode="None"
+                        Margin="10">
 
-        <ScrollView Grid.Row="2" x:Name="CalendarContainer">
-            <Grid x:Name="CalendarGrid" Margin="10" />
-        </ScrollView>
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical"
+                                 Span="7"
+                                 HorizontalItemSpacing="1"
+                                 VerticalItemSpacing="1"/>
+            </CollectionView.ItemsLayout>
+
+        </CollectionView>
 
     </Grid>
 

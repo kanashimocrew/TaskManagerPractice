@@ -21,6 +21,9 @@
             <converters:DateTimeToStringConverter x:Key="DateTimeToString" />
             <converters:PriorityTextConverter x:Key="PriorityTextConverter" />
             <converters:StatusTextConverter x:Key="StatusTextConverter" />
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter" />
+            <converters:MonthToTextColorConverter x:Key="MonthToTextColorConverter" />
 
         </ResourceDictionary>
     </Application.Resources>

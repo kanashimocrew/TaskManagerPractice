@@ -31,12 +31,10 @@ namespace TaskManager.Services
                 if (navigation == null) return;
 
                 var databaseService = new DatabaseService();
-
                 var viewModel = new TaskEditViewModel(databaseService);
-
                 viewModel.Initialize(null, selectedDate);
 
-                var editPage = new TaskEditPage()
+                var editPage = new TaskEditPage
                 {
                     BindingContext = viewModel
                 };
@@ -56,9 +54,7 @@ namespace TaskManager.Services
                 var navigation = GetNavigation();
                 if (navigation == null) return;
 
-                // Используем альтернативный конструктор
                 var detailPage = new TaskDetailPage(taskId);
-
                 await navigation.PushAsync(detailPage);
             }
             catch (Exception ex)
@@ -78,7 +74,7 @@ namespace TaskManager.Services
             }
             catch
             {
-                // Игнорируем ошибки показа алерта
+
             }
         }
     }

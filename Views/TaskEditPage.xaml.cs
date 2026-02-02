@@ -27,53 +27,5 @@ namespace TaskManager.Views
                 viewModel.UpdateSaveButtonText();
             }
         }
-
-        private IDictionary<string, object> GetNavigationParameters()
-        {
-            if (Shell.Current?.CurrentState?.Location is not null)
-            {
-                var query = Shell.Current.CurrentState.Location.OriginalString;
-
-
-                if (query.Contains("TaskId=") || query.Contains("SelectedDate="))
-                {
-                    var parameters = new Dictionary<string, object>();
-
-                    var queryParts = query.Split('?');
-                    if (queryParts.Length > 1)
-                    {
-                        var queryString = queryParts[1];
-                        var pairs = queryString.Split('&');
-
-                        foreach (var pair in pairs)
-                        {
-                            var keyValue = pair.Split('=');
-                            if (keyValue.Length == 2)
-                            {
-                                var key = keyValue[0];
-                                var value = keyValue[1];
-
-                                if (key == "TaskId" && int.TryParse(value, out int taskId))
-                                {
-                                    parameters[key] = taskId;
-                                }
-                                else if (key == "SelectedDate")
-                                {
-                                    var decodedValue = Uri.UnescapeDataString(value);
-                                    if (DateTime.TryParse(decodedValue, out DateTime date))
-                                    {
-                                        parameters[key] = date;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    return parameters.Count > 0 ? parameters : null;
-                }
-            }
-
-            return null;
-        }
     }
 }

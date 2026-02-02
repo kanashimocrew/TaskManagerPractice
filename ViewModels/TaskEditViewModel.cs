@@ -229,6 +229,8 @@ namespace TaskManager.ViewModels
                     DueTime = _originalTask.DueDate.TimeOfDay;
                     SelectedPriority = _originalTask.Priority;
                     IsNewTask = false;
+
+                    OnPropertyChanged(nameof(SelectedPriorityIndex));
                 }
             }
             catch (Exception ex)

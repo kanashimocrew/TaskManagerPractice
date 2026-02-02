@@ -64,7 +64,6 @@ namespace TaskManager.ViewModels
         public ICommand NavigateToCreateTaskCommand { get; }
         public ICommand NavigateToTaskDetailCommand { get; }
 
-
         public TaskListViewModel() : this(new DatabaseService())
         {
         }
@@ -192,21 +191,13 @@ namespace TaskManager.ViewModels
 
         private async Task NavigateToCreateTask()
         {
-            try
-            {
-                await Services.NavigationService.NavigateToCreateTask(SelectedDate);
-            }
-            catch (Exception ex)
-            {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"Не удалось перейти к созданию задачи: {ex.Message}", "OK");
-            }
+            await Services.NavigationService.NavigateToCreateTask(SelectedDate);
         }
 
         private async Task NavigateToTaskDetail(TaskItem task)
         {
             if (task == null) return;
-            await NavigationService.NavigateToTaskDetail(task.Id);
+            await Services.NavigationService.NavigateToTaskDetail(task.Id);
         }
     }
 }
