@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -25,7 +24,6 @@ namespace TaskManager.ViewModels
                 {
                     _selectedDate = value;
                     OnPropertyChanged(nameof(SelectedDate));
-                    LoadTasks();
                 }
             }
         }
@@ -74,38 +72,32 @@ namespace TaskManager.ViewModels
             SelectedDate = DateTime.Now.Date;
 
             LoadTasksCommand = new Command(async () => await LoadTasks());
+
             DeleteTaskCommand = new Command<TaskItem>(async (task) => await DeleteTask(task));
             ChangeStatusCommand = new Command<TaskItem>(async (task) => await ChangeStatus(task));
             NavigateToCreateTaskCommand = new Command(async () => await NavigateToCreateTask());
             NavigateToTaskDetailCommand = new Command<TaskItem>(async (task) => await NavigateToTaskDetail(task));
 
-            MessagingCenter.Subscribe<object, DateTime>(this, "TaskSaved", (sender, date) =>
+            MessagingCenter.Subscribe<object>(this, "TaskSaved", (sender) =>
             {
-                if (date == SelectedDate)
-                {
-                    LoadTasks();
-                }
+                LoadTasksCommand.Execute(null);
             });
 
-            MessagingCenter.Subscribe<object, DateTime>(this, "TaskUpdated", (sender, date) =>
+            MessagingCenter.Subscribe<object>(this, "TaskUpdated", (sender) =>
             {
-                if (date == SelectedDate)
-                {
-                    LoadTasks();
-                }
+                LoadTasksCommand.Execute(null);
             });
 
-            MessagingCenter.Subscribe<object, DateTime>(this, "TaskDeleted", (sender, date) =>
+            MessagingCenter.Subscribe<object>(this, "TaskDeleted", (sender) =>
             {
-                if (date == SelectedDate)
-                {
-                    LoadTasks();
-                }
+                LoadTasksCommand.Execute(null);
             });
         }
 
         private async Task LoadTasks()
         {
+            if (IsLoading) return;
+
             try
             {
                 IsLoading = true;
@@ -148,8 +140,6 @@ namespace TaskManager.ViewModels
                     await _databaseService.DeleteTaskAsync(task);
                     Tasks.Remove(task);
                     HasTasks = Tasks.Count > 0;
-
-                    MessagingCenter.Send(this, "TasksUpdated", SelectedDate);
                 }
                 catch (Exception ex)
                 {
@@ -177,10 +167,12 @@ namespace TaskManager.ViewModels
             try
             {
                 await _databaseService.SaveTaskAsync(task);
-                MessagingCenter.Send(this, "TaskStatusChanged", task);
 
                 int index = Tasks.IndexOf(task);
-                Tasks[index] = task;
+                if (index >= 0)
+                {
+                    Tasks[index] = task;
+                }
             }
             catch (Exception ex)
             {

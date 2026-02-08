@@ -5,13 +5,10 @@ namespace TaskManager.Views
 {
     public partial class TaskDetailPage : ContentPage
     {
-        public TaskDetailPage()
+        public TaskDetailPage(int taskId)
         {
             InitializeComponent();
-        }
 
-        public TaskDetailPage(int taskId) : this()
-        {
             if (BindingContext is TaskDetailViewModel viewModel)
             {
                 viewModel.Initialize(taskId);

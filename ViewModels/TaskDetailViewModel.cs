@@ -87,24 +87,62 @@ namespace TaskManager.ViewModels
 
         public int EditPriorityIndex
         {
-            get => (int)EditPriority - 1;
+            get
+            {
+                return EditPriority switch
+                {
+                    TaskPriority.Low => 0,
+                    TaskPriority.Medium => 1,
+                    TaskPriority.High => 2,
+                    _ => 1
+                };
+            }
             set
             {
-                if (value >= 0 && value < 3)
+                var newPriority = value switch
                 {
-                    EditPriority = (TaskPriority)(value + 1);
+                    0 => TaskPriority.Low,
+                    1 => TaskPriority.Medium,
+                    2 => TaskPriority.High,
+                    _ => TaskPriority.Medium
+                };
+
+                if (EditPriority != newPriority)
+                {
+                    EditPriority = newPriority;
+                    OnPropertyChanged(nameof(EditPriorityIndex));
                 }
             }
         }
 
         public int EditStatusIndex
         {
-            get => (int)EditStatus;
+            get
+            {
+                return EditStatus switch
+                {
+                    Models.TaskStatus.New => 0,
+                    Models.TaskStatus.InProgress => 1,
+                    Models.TaskStatus.Completed => 2,
+                    Models.TaskStatus.Cancelled => 3,
+                    _ => 0
+                };
+            }
             set
             {
-                if (value >= 0 && value < 4)
+                var newStatus = value switch
                 {
-                    EditStatus = (Models.TaskStatus)value;
+                    0 => Models.TaskStatus.New,
+                    1 => Models.TaskStatus.InProgress,
+                    2 => Models.TaskStatus.Completed,
+                    3 => Models.TaskStatus.Cancelled,
+                    _ => Models.TaskStatus.New
+                };
+
+                if (EditStatus != newStatus)
+                {
+                    EditStatus = newStatus;
+                    OnPropertyChanged(nameof(EditStatusIndex));
                 }
             }
         }
@@ -180,6 +218,9 @@ namespace TaskManager.ViewModels
                     EditDueTime = Task.DueDate.TimeOfDay;
                     EditPriority = Task.Priority;
                     EditStatus = Task.Status;
+
+                    OnPropertyChanged(nameof(EditPriorityIndex));
+                    OnPropertyChanged(nameof(EditStatusIndex));
                 }
             }
             catch (Exception ex)
@@ -206,6 +247,9 @@ namespace TaskManager.ViewModels
                 EditDueTime = _originalTask.DueDate.TimeOfDay;
                 EditPriority = _originalTask.Priority;
                 EditStatus = _originalTask.Status;
+
+                OnPropertyChanged(nameof(EditPriorityIndex));
+                OnPropertyChanged(nameof(EditStatusIndex));
             }
         }
 
@@ -247,10 +291,9 @@ namespace TaskManager.ViewModels
 
                 IsEditing = false;
 
-                MessagingCenter.Send(this, "TaskUpdated", Task.DueDate.Date);
+                OnPropertyChanged(nameof(Task));
 
-                await Application.Current.MainPage.DisplayAlert("Успех",
-                    "Изменения сохранены", "OK");
+                MessagingCenter.Send(this, "TaskUpdated", Task.DueDate.Date);
             }
             catch (Exception ex)
             {

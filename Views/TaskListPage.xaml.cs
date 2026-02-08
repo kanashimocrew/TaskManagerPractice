@@ -11,7 +11,6 @@ namespace TaskManager.Views
         {
             InitializeComponent();
             _selectedDate = selectedDate;
-
             Title = $"Задачи на {selectedDate:dd.MM.yyyy}";
         }
 
@@ -21,12 +20,7 @@ namespace TaskManager.Views
 
             if (BindingContext is TaskListViewModel viewModel)
             {
-
-                if (viewModel.SelectedDate.Date != _selectedDate.Date)
-                {
-                    viewModel.SelectedDate = _selectedDate;
-                }
-
+                viewModel.SelectedDate = _selectedDate;
                 viewModel.LoadTasksCommand.Execute(null);
             }
         }

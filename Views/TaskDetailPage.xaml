@@ -9,20 +9,20 @@
     <ContentPage.BindingContext>
         <viewmodels:TaskDetailViewModel />
     </ContentPage.BindingContext>
-    
-    
+
+
     <ContentPage.Resources>
         <converters:StatusToIconConverter x:Key="StatusToIcon" />
         <converters:DateTimeToStringConverter x:Key="DateTimeToString" />
         <converters:PriorityToColorConverter x:Key="PriorityToColor" />
+        <converters:PriorityTextConverter x:Key="PriorityTextConverter" />
+        <converters:StatusTextConverter x:Key="StatusTextConverter" />
     </ContentPage.Resources>
 
     <Grid>
 
-
         <StackLayout IsVisible="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
                      Padding="20" Spacing="20">
-
 
             <Frame BackgroundColor="{Binding Task.Priority, Converter={StaticResource PriorityToColor}}"
                    CornerRadius="10"
@@ -31,14 +31,12 @@
 
                 <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto">
 
-
                     <Label Grid.Column="0"
                            Grid.RowSpan="3"
                            Text="{Binding Task.Status, Converter={StaticResource StatusToIcon}}"
                            FontSize="32"
                            VerticalOptions="Center"
                            Margin="0,0,15,0"/>
-
 
                     <Label Grid.Column="1"
                            Grid.Row="0"
@@ -54,7 +52,6 @@
                            TextColor="Gray"
                            Margin="0,5,0,0"/>
 
-
                     <Label Grid.Column="1"
                            Grid.Row="2"
                            Text="{Binding Task.Priority, Converter={StaticResource PriorityTextConverter}}"
@@ -66,7 +63,6 @@
                 </Grid>
 
             </Frame>
-
 
             <StackLayout>
                 <Label Text="Описание"
@@ -95,7 +91,6 @@
 
                 </Frame>
             </StackLayout>
-
 
             <StackLayout>
                 <Label Text="Детали задачи"
@@ -152,7 +147,6 @@
                 </Grid>
             </StackLayout>
 
-
             <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,20,0,0">
 
                 <Button Grid.Column="0"
@@ -180,7 +174,6 @@
         <StackLayout IsVisible="{Binding IsEditing}"
                      Padding="20" Spacing="15">
 
-
             <StackLayout>
                 <Label Text="Название *"
                        FontSize="16"
@@ -190,7 +183,6 @@
                        FontSize="16"
                        ClearButtonVisibility="WhileEditing"/>
             </StackLayout>
-
 
             <StackLayout>
                 <Label Text="Описание"
@@ -202,7 +194,6 @@
                         MinimumHeightRequest="80"
                         FontSize="16"/>
             </StackLayout>
-
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                 <StackLayout Grid.Column="0">
@@ -224,30 +215,27 @@
                 </StackLayout>
             </Grid>
 
-
             <StackLayout>
                 <Label Text="Приоритет"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
-                <Picker Title="Выберите приоритет"
+                <Picker Title="Приоритет"
                         ItemsSource="{Binding PriorityOptions}"
                         SelectedIndex="{Binding EditPriorityIndex}"
                         FontSize="16"/>
             </StackLayout>
-
 
             <StackLayout>
                 <Label Text="Статус"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
-                <Picker Title="Выберите статус"
+                <Picker Title="Статус"
                         ItemsSource="{Binding StatusOptions}"
                         SelectedIndex="{Binding EditStatusIndex}"
                         FontSize="16"/>
             </StackLayout>
-
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,20,0,0">
                 <Button Grid.Column="0"
@@ -259,7 +247,7 @@
                 <Button Grid.Column="1"
                         Text="Сохранить"
                         Command="{Binding SaveChangesCommand}"
-                        BackgroundColor="{StaticResource PrimaryColor}"
+                        BackgroundColor="#512DA8"
                         TextColor="White"/>
             </Grid>
 

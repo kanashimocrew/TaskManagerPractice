@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
 using TaskManager.Models;
 using TaskManager.Services;
 
@@ -25,6 +24,7 @@ namespace TaskManager.ViewModels
         private List<string> _priorityOptions;
         private string _pageTitle;
         private string _saveButtonText;
+        private int _selectedPriorityIndex = 1;
 
         public string Title
         {
@@ -125,29 +125,12 @@ namespace TaskManager.ViewModels
 
         public int SelectedPriorityIndex
         {
-            get
-            {
-                return SelectedPriority switch
-                {
-                    TaskPriority.Low => 0,
-                    TaskPriority.Medium => 1,
-                    TaskPriority.High => 2,
-                    _ => 1 
-                };
-            }
+            get => _selectedPriorityIndex;
             set
             {
-                var newPriority = value switch
+                if (SetProperty(ref _selectedPriorityIndex, value))
                 {
-                    0 => TaskPriority.Low,
-                    1 => TaskPriority.Medium,
-                    2 => TaskPriority.High,
-                    _ => TaskPriority.Medium
-                };
-
-                if (SelectedPriority != newPriority)
-                {
-                    SelectedPriority = newPriority;
+                    SelectedPriority = GetPriorityFromIndex(value);
                 }
             }
         }
@@ -215,6 +198,28 @@ namespace TaskManager.ViewModels
             SaveButtonText = IsNewTask ? "Создать" : "Сохранить";
         }
 
+        private TaskPriority GetPriorityFromIndex(int index)
+        {
+            return index switch
+            {
+                0 => TaskPriority.Low,
+                1 => TaskPriority.Medium,
+                2 => TaskPriority.High,
+                _ => TaskPriority.Medium
+            };
+        }
+
+        private int GetIndexFromPriority(TaskPriority priority)
+        {
+            return priority switch
+            {
+                TaskPriority.Low => 0,
+                TaskPriority.Medium => 1,
+                TaskPriority.High => 2,
+                _ => 1
+            };
+        }
+
         private async Task LoadTask(int taskId)
         {
             try
@@ -228,9 +233,10 @@ namespace TaskManager.ViewModels
                     DueDate = _originalTask.DueDate.Date;
                     DueTime = _originalTask.DueDate.TimeOfDay;
                     SelectedPriority = _originalTask.Priority;
-                    IsNewTask = false;
 
-                    OnPropertyChanged(nameof(SelectedPriorityIndex));
+                    SelectedPriorityIndex = GetIndexFromPriority(SelectedPriority);
+
+                    IsNewTask = false;
                 }
             }
             catch (Exception ex)
@@ -310,8 +316,6 @@ namespace TaskManager.ViewModels
 
                 if (result > 0)
                 {
-                    Console.WriteLine($"Задача сохранена: ID={task.Id}, Title={task.Title}");
-
                     MessagingCenter.Send(this, "TaskSaved", task.DueDate.Date);
 
                     await NavigationService.GoBack();
@@ -347,7 +351,8 @@ namespace TaskManager.ViewModels
                     return;
                 }
             }
-NavigationService.GoBack();
+
+            await NavigationService.GoBack();
         }
     }
 }
