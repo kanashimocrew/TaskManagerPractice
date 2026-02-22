@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using TaskManager.Models;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.Converters
 {
@@ -10,21 +10,13 @@ namespace TaskManager.Converters
             if (value is DateTime dateTime)
             {
                 if (dateTime.Date == DateTime.Today)
-                {
-                    return $"Сегодня, {dateTime:HH:mm}";
-                }
+                    return $"{AppResources.Today}, {dateTime:HH:mm}";
                 else if (dateTime.Date == DateTime.Today.AddDays(1))
-                {
-                    return $"Завтра, {dateTime:HH:mm}";
-                }
+                    return $"{AppResources.Tomorrow}, {dateTime:HH:mm}";
                 else if (dateTime.Date == DateTime.Today.AddDays(-1))
-                {
-                    return $"Вчера, {dateTime:HH:mm}";
-                }
+                    return $"{AppResources.Yesterday}, {dateTime:HH:mm}";
                 else
-                {
                     return dateTime.ToString("dd.MM.yyyy, HH:mm");
-                }
             }
 
             return string.Empty;

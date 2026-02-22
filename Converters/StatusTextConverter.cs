@@ -1,8 +1,5 @@
 ﻿using System.Globalization;
-using TaskManager.Models;
-
-using System.Globalization;
-using TaskManager.Models;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.Converters
 {
@@ -14,11 +11,11 @@ namespace TaskManager.Converters
             {
                 return status switch
                 {
-                    Models.TaskStatus.New => "Новая",
-                    Models.TaskStatus.InProgress => "В работе",
-                    Models.TaskStatus.Completed => "Выполнена",
-                    Models.TaskStatus.Cancelled => "Отменена",
-                    _ => "Неизвестно"
+                    Models.TaskStatus.New => AppResources.StatusNew,
+                    Models.TaskStatus.InProgress => AppResources.StatusInProgress,
+                    Models.TaskStatus.Completed => AppResources.StatusCompleted,
+                    Models.TaskStatus.Cancelled => AppResources.StatusCancelled,
+                    _ => string.Empty
                 };
             }
 

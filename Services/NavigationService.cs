@@ -1,5 +1,4 @@
-﻿using Microsoft.Maui.Controls;
-using TaskManager.ViewModels;
+﻿using TaskManager.ViewModels;
 using TaskManager.Views;
 
 namespace TaskManager.Services

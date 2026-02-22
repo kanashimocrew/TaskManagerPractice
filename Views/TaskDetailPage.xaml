@@ -3,20 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:TaskManager.Converters"
              xmlns:viewmodels="clr-namespace:TaskManager.ViewModels"
+             xmlns:resources="clr-namespace:TaskManager.Resources.Localization"
              x:Class="TaskManager.Views.TaskDetailPage"
-             Title="Просмотр задачи">
+             Title="{x:Static resources:AppResources.TaskDetailPageTitle}">
 
     <ContentPage.BindingContext>
         <viewmodels:TaskDetailViewModel />
     </ContentPage.BindingContext>
 
-
     <ContentPage.Resources>
-        <converters:StatusToIconConverter x:Key="StatusToIcon" />
-        <converters:DateTimeToStringConverter x:Key="DateTimeToString" />
-        <converters:PriorityToColorConverter x:Key="PriorityToColor" />
-        <converters:PriorityTextConverter x:Key="PriorityTextConverter" />
-        <converters:StatusTextConverter x:Key="StatusTextConverter" />
+        <ResourceDictionary>
+            <converters:StatusToIconConverter x:Key="StatusToIcon" />
+            <converters:DateTimeToStringConverter x:Key="DateTimeToString" />
+            <converters:PriorityToColorConverter x:Key="PriorityToColor" />
+            <converters:PriorityTextConverter x:Key="PriorityTextConverter" />
+            <converters:StatusTextConverter x:Key="StatusTextConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
@@ -65,7 +68,7 @@
             </Frame>
 
             <StackLayout>
-                <Label Text="Описание"
+                <Label Text="{x:Static resources:AppResources.TaskDescriptionLabel}"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
@@ -81,7 +84,7 @@
                             <DataTrigger TargetType="Label"
                                          Binding="{Binding Task.Description}"
                                          Value="{x:Null}">
-                                <Setter Property="Text" Value="Описание отсутствует" />
+                                <Setter Property="Text" Value="{x:Static resources:AppResources.NoDescription}" />
                                 <Setter Property="TextColor" Value="Gray" />
                                 <Setter Property="FontAttributes" Value="Italic" />
                             </DataTrigger>
@@ -93,7 +96,7 @@
             </StackLayout>
 
             <StackLayout>
-                <Label Text="Детали задачи"
+                <Label Text="{x:Static resources:AppResources.TaskDetailsLabel}"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
@@ -103,7 +106,7 @@
                       BackgroundColor="#F5F5F5">
 
                     <Label Grid.Column="0" Grid.Row="0"
-                           Text="Статус:"
+                           Text="{x:Static resources:AppResources.TaskStatusLabel}"
                            FontSize="14"
                            TextColor="Gray"/>
                     <Label Grid.Column="1" Grid.Row="0"
@@ -112,7 +115,7 @@
                            FontAttributes="Bold"/>
 
                     <Label Grid.Column="0" Grid.Row="1"
-                           Text="Создана:"
+                           Text="{x:Static resources:AppResources.CreatedAt}"
                            FontSize="14"
                            TextColor="Gray"/>
                     <Label Grid.Column="1" Grid.Row="1"
@@ -120,7 +123,7 @@
                            FontSize="14"/>
 
                     <Label Grid.Column="0" Grid.Row="2"
-                           Text="Обновлена:"
+                           Text="{x:Static resources:AppResources.UpdatedAt}"
                            FontSize="14"
                            TextColor="Gray"/>
                     <Label Grid.Column="1" Grid.Row="2"
@@ -130,7 +133,7 @@
                             <DataTrigger TargetType="Label"
                                          Binding="{Binding Task.UpdatedAt}"
                                          Value="{x:Null}">
-                                <Setter Property="Text" Value="Не обновлялась" />
+                                <Setter Property="Text" Value="{x:Static resources:AppResources.NotUpdated}" />
                                 <Setter Property="TextColor" Value="LightGray" />
                             </DataTrigger>
                         </Label.Triggers>
@@ -150,19 +153,19 @@
             <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,20,0,0">
 
                 <Button Grid.Column="0"
-                        Text="Назад"
+                        Text="{x:Static resources:AppResources.BackButton}"
                         Command="{Binding GoBackCommand}"
                         BackgroundColor="LightGray"
                         TextColor="Black"/>
 
                 <Button Grid.Column="1"
-                        Text="Редактировать"
+                        Text="{x:Static resources:AppResources.EditButton}"
                         Command="{Binding StartEditingCommand}"
                         BackgroundColor="Orange"
                         TextColor="White"/>
 
                 <Button Grid.Column="2"
-                        Text="Удалить"
+                        Text="{x:Static resources:AppResources.DeleteButton}"
                         Command="{Binding DeleteTaskCommand}"
                         BackgroundColor="Red"
                         TextColor="White"/>
@@ -175,29 +178,31 @@
                      Padding="20" Spacing="15">
 
             <StackLayout>
-                <Label Text="Название *"
+                <Label Text="{x:Static resources:AppResources.TaskTitleLabel}"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
                 <Entry Text="{Binding EditTitle}"
                        FontSize="16"
+                       Placeholder="{x:Static resources:AppResources.TaskTitleLabel}"
                        ClearButtonVisibility="WhileEditing"/>
             </StackLayout>
 
             <StackLayout>
-                <Label Text="Описание"
+                <Label Text="{x:Static resources:AppResources.TaskDescriptionLabel}"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
                 <Editor Text="{Binding EditDescription}"
                         AutoSize="TextChanges"
                         MinimumHeightRequest="80"
+                        Placeholder="{x:Static resources:AppResources.TaskDescriptionLabel}"
                         FontSize="16"/>
             </StackLayout>
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                 <StackLayout Grid.Column="0">
-                    <Label Text="Дата *"
+                    <Label Text="{x:Static resources:AppResources.TaskDueDateLabel}"
                            FontSize="16"
                            FontAttributes="Bold"/>
 
@@ -206,7 +211,7 @@
                 </StackLayout>
 
                 <StackLayout Grid.Column="1">
-                    <Label Text="Время"
+                    <Label Text="{x:Static resources:AppResources.TaskTimeLabel}"
                            FontSize="16"
                            FontAttributes="Bold"/>
 
@@ -216,22 +221,22 @@
             </Grid>
 
             <StackLayout>
-                <Label Text="Приоритет"
+                <Label Text="{x:Static resources:AppResources.TaskPriorityLabel}"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
-                <Picker Title="Приоритет"
+                <Picker Title="{x:Static resources:AppResources.TaskPriorityLabel}"
                         ItemsSource="{Binding PriorityOptions}"
                         SelectedIndex="{Binding EditPriorityIndex}"
                         FontSize="16"/>
             </StackLayout>
 
             <StackLayout>
-                <Label Text="Статус"
+                <Label Text="{x:Static resources:AppResources.TaskStatusLabel}"
                        FontSize="16"
                        FontAttributes="Bold"/>
 
-                <Picker Title="Статус"
+                <Picker Title="{x:Static resources:AppResources.TaskStatusLabel}"
                         ItemsSource="{Binding StatusOptions}"
                         SelectedIndex="{Binding EditStatusIndex}"
                         FontSize="16"/>
@@ -239,13 +244,13 @@
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,20,0,0">
                 <Button Grid.Column="0"
-                        Text="Отмена"
+                        Text="{x:Static resources:AppResources.CancelButton}"
                         Command="{Binding CancelEditingCommand}"
                         BackgroundColor="LightGray"
                         TextColor="Black"/>
 
                 <Button Grid.Column="1"
-                        Text="Сохранить"
+                        Text="{x:Static resources:AppResources.SaveButton}"
                         Command="{Binding SaveChangesCommand}"
                         BackgroundColor="#512DA8"
                         TextColor="White"/>

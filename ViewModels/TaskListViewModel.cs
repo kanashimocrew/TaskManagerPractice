@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
 using TaskManager.Models;
 using TaskManager.Services;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.ViewModels
 {
@@ -14,6 +12,7 @@ namespace TaskManager.ViewModels
         private DateTime _selectedDate;
         private bool _isLoading;
         private bool _hasTasks;
+        private string _pageTitle;
 
         public DateTime SelectedDate
         {
@@ -24,8 +23,15 @@ namespace TaskManager.ViewModels
                 {
                     _selectedDate = value;
                     OnPropertyChanged(nameof(SelectedDate));
+                    UpdatePageTitle(); 
                 }
             }
+        }
+
+        public string PageTitle
+        {
+            get => _pageTitle;
+            set => SetProperty(ref _pageTitle, value);
         }
 
         public bool IsLoading
@@ -71,6 +77,9 @@ namespace TaskManager.ViewModels
             _databaseService = databaseService;
             SelectedDate = DateTime.Now.Date;
 
+            AppResources.Culture = System.Globalization.CultureInfo.CurrentUICulture;
+            UpdatePageTitle();
+
             LoadTasksCommand = new Command(async () => await LoadTasks());
 
             DeleteTaskCommand = new Command<TaskItem>(async (task) => await DeleteTask(task));
@@ -92,6 +101,16 @@ namespace TaskManager.ViewModels
             {
                 LoadTasksCommand.Execute(null);
             });
+
+            MessagingCenter.Subscribe<object>(this, "LanguageChanged", (sender) =>
+            {
+                UpdatePageTitle();
+            });
+        }
+
+        private void UpdatePageTitle()
+        {
+            PageTitle = string.Format(AppResources.TasksPageTitle, SelectedDate.ToString("dd.MM.yyyy"));
         }
 
         private async Task LoadTasks()
@@ -114,8 +133,8 @@ namespace TaskManager.ViewModels
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"Не удалось загрузить задачи: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                    $"Не удалось загрузить задачи: {ex.Message}", AppResources.Ok);
             }
             finally
             {
@@ -128,10 +147,10 @@ namespace TaskManager.ViewModels
             if (task == null) return;
 
             bool confirm = await Application.Current.MainPage.DisplayAlert(
-                "Подтверждение удаления",
-                $"Вы уверены, что хотите удалить задачу \"{task.Title}\"?",
-                "Удалить",
-                "Отмена");
+                AppResources.ConfirmDeleteTitle,
+                string.Format(AppResources.ConfirmDeleteMessage, task.Title),
+                AppResources.DeleteButton,
+                AppResources.CancelButton);
 
             if (confirm)
             {
@@ -143,8 +162,8 @@ namespace TaskManager.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Ошибка",
-                        $"Не удалось удалить задачу: {ex.Message}", "OK");
+                    await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                        $"Не удалось удалить задачу: {ex.Message}", AppResources.Ok);
                 }
             }
         }
@@ -176,8 +195,8 @@ namespace TaskManager.ViewModels
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"Не удалось обновить статус: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                    $"Не удалось обновить статус: {ex.Message}", AppResources.Ok);
             }
         }
 

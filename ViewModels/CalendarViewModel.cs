@@ -3,6 +3,7 @@ using TaskManager.Models;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using TaskManager.Views;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.ViewModels
 {
@@ -101,7 +102,7 @@ namespace TaskManager.ViewModels
                 });
             }
 
-            var totalCells = 42; // 6 недель * 7 дней
+            var totalCells = 42;
             var remainingCells = totalCells - Days.Count;
 
             for (int i = 1; i <= remainingCells; i++)

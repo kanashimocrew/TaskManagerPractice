@@ -2,12 +2,24 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:TaskManager.ViewModels"
+             xmlns:converters="clr-namespace:TaskManager.Converters"
+             xmlns:resources="clr-namespace:TaskManager.Resources.Localization"
              x:Class="TaskManager.Views.TaskListPage"
-             Title="Задачи">
-
+             Title="{Binding PageTitle}">
     <ContentPage.BindingContext>
         <viewmodels:TaskListViewModel />
     </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:PriorityToColorConverter x:Key="PriorityToColor" />
+            <converters:StatusToIconConverter x:Key="StatusToIcon" />
+            <converters:DateTimeToStringConverter x:Key="DateTimeToString" />
+            <converters:PriorityTextConverter x:Key="PriorityTextConverter" />
+            <converters:StatusTextConverter x:Key="StatusTextConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid>
         <ActivityIndicator IsRunning="{Binding IsLoading}"
@@ -20,7 +32,7 @@
 
         <Grid IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
 
-            <Label Text="Задач еще нет"
+            <Label Text="{x:Static resources:AppResources.NoTasksMessage}"
                    IsVisible="{Binding HasTasks, Converter={StaticResource InverseBoolConverter}}"
                    HorizontalOptions="Center"
                    VerticalOptions="Center"
@@ -35,7 +47,7 @@
                               SelectionMode="None">
 
                     <CollectionView.EmptyView>
-                        <Label Text="Задач еще нет"
+                        <Label Text="{x:Static resources:AppResources.NoTasksMessage}"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"
                                FontSize="18"
@@ -48,74 +60,74 @@
                             <SwipeView>
 
                                 <SwipeView.LeftItems>
-                                    <SwipeItem Text="Статус"
-                      BackgroundColor="Orange"
-                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=ChangeStatusCommand}"
-                      CommandParameter="{Binding .}">
+                                    <SwipeItem Text="{x:Static resources:AppResources.StatusButton}"
+                                               BackgroundColor="Orange"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=ChangeStatusCommand}"
+                                               CommandParameter="{Binding .}">
                                         <SwipeItem.IconImageSource>
                                             <FontImageSource Glyph="⚙️"
-                                   Color="White"
-                                   Size="20"/>
+                                                             Color="White"
+                                                             Size="20"/>
                                         </SwipeItem.IconImageSource>
                                     </SwipeItem>
                                 </SwipeView.LeftItems>
 
                                 <SwipeView.RightItems>
-                                    <SwipeItem Text="Удалить"
-                      BackgroundColor="Red"
-                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=DeleteTaskCommand}"
-                      CommandParameter="{Binding .}">
+                                    <SwipeItem Text="{x:Static resources:AppResources.DeleteButton}"
+                                               BackgroundColor="Red"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=DeleteTaskCommand}"
+                                               CommandParameter="{Binding .}">
                                         <SwipeItem.IconImageSource>
                                             <FontImageSource Glyph="🗑️"
-                                   Color="White"
-                                   Size="20"/>
+                                                             Color="White"
+                                                             Size="20"/>
                                         </SwipeItem.IconImageSource>
                                     </SwipeItem>
                                 </SwipeView.RightItems>
 
                                 <Frame Padding="15"
-               CornerRadius="10"
-               HasShadow="True"
-               Margin="10,5"
-               BackgroundColor="{Binding Priority, Converter={StaticResource PriorityToColor}}">
+                                       CornerRadius="10"
+                                       HasShadow="True"
+                                       Margin="10,5"
+                                       BackgroundColor="{Binding Priority, Converter={StaticResource PriorityToColor}}">
 
                                     <Frame.GestureRecognizers>
                                         <TapGestureRecognizer 
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=NavigateToTaskDetailCommand}"
-                    CommandParameter="{Binding .}"/>
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=NavigateToTaskDetailCommand}"
+                                            CommandParameter="{Binding .}"/>
                                     </Frame.GestureRecognizers>
 
                                     <Grid ColumnDefinitions="Auto, *, Auto"
-                  RowDefinitions="Auto, Auto">
+                                          RowDefinitions="Auto, Auto">
 
                                         <Label Grid.Column="0"
-                       Grid.RowSpan="2"
-                       Text="{Binding Status, Converter={StaticResource StatusToIcon}}"
-                       FontSize="24"
-                       VerticalOptions="Center"
-                       Margin="0,0,10,0"/>
+                                               Grid.RowSpan="2"
+                                               Text="{Binding Status, Converter={StaticResource StatusToIcon}}"
+                                               FontSize="24"
+                                               VerticalOptions="Center"
+                                               Margin="0,0,10,0"/>
 
                                         <Label Grid.Column="1"
-                       Grid.Row="0"
-                       Text="{Binding Title}"
-                       FontSize="16"
-                       FontAttributes="Bold"
-                       LineBreakMode="TailTruncation"/>
+                                               Grid.Row="0"
+                                               Text="{Binding Title}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation"/>
 
                                         <Label Grid.Column="1"
-                       Grid.Row="1"
-                       Text="{Binding DueDate, Converter={StaticResource DateTimeToString}}"
-                       FontSize="14"
-                       TextColor="Gray"
-                       Margin="0,5,0,0"/>
+                                               Grid.Row="1"
+                                               Text="{Binding DueDate, Converter={StaticResource DateTimeToString}}"
+                                               FontSize="14"
+                                               TextColor="Gray"
+                                               Margin="0,5,0,0"/>
 
                                         <Label Grid.Column="2"
-                       Grid.RowSpan="2"
-                       Text="{Binding Priority, Converter={StaticResource PriorityTextConverter}}"
-                       FontSize="12"
-                       FontAttributes="Bold"
-                       TextColor="DarkGray"
-                       VerticalOptions="Center"/>
+                                               Grid.RowSpan="2"
+                                               Text="{Binding Priority, Converter={StaticResource PriorityTextConverter}}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="DarkGray"
+                                               VerticalOptions="Center"/>
 
                                     </Grid>
 

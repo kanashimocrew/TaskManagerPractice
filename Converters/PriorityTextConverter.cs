@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using TaskManager.Models;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.Converters
 {
@@ -11,11 +12,10 @@ namespace TaskManager.Converters
             {
                 return priority switch
                 {
-                    TaskPriority.None => "Без приоритета",
-                    TaskPriority.Low => "Низкий",
-                    TaskPriority.Medium => "Средний",
-                    TaskPriority.High => "Высокий",
-                    _ => "Неизвестно"
+                    TaskPriority.Low => AppResources.PriorityLow,
+                    TaskPriority.Medium => AppResources.PriorityMedium,
+                    TaskPriority.High => AppResources.PriorityHigh,
+                    _ => AppResources.PriorityNone
                 };
             }
 

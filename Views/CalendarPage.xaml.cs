@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Maui.Controls;
-using TaskManager.Services;
+﻿using TaskManager.Services;
 using TaskManager.Models;
-using TaskManager.ViewModels;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.Views
 {
@@ -146,8 +143,10 @@ namespace TaskManager.Views
         private void UpdateMonthYearLabel()
         {
             string[] russianMonths = {
-                "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-                "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+                AppResources.January, AppResources.February, AppResources.March,
+                AppResources.April, AppResources.May, AppResources.June,
+                AppResources.July, AppResources.August, AppResources.September,
+                AppResources.October, AppResources.November, AppResources.December
             };
 
             int monthIndex = _currentDate.Month - 1;

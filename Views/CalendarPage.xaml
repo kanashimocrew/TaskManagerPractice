@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:resources="clr-namespace:TaskManager.Resources.Localization"
              x:Class="TaskManager.Views.CalendarPage"
-             Title="Календарь задач">
+             Title="{x:Static resources:AppResources.CalendarPageTitle}">
 
     <Grid RowDefinitions="Auto, Auto, *">
         <Grid Grid.Row="0" 
@@ -19,7 +20,7 @@
 
             <Label x:Name="MonthYearLabel"
                    Grid.Column="1"
-                   Text="Январь 2024"
+                   Text=""
                    FontSize="20"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"
@@ -27,7 +28,7 @@
 
             <Button x:Name="TodayButton"
                     Grid.Column="2"
-                    Text="Сегодня"
+                    Text="{x:Static resources:AppResources.Today}"
                     Margin="10,0"
                     HeightRequest="40"
                     CornerRadius="20"/>
@@ -41,18 +42,18 @@
                     CornerRadius="20"/>
 
         </Grid>
-        
+
         <Grid Grid.Row="1"
               Padding="10,0"
               ColumnDefinitions="*,*,*,*,*,*,*">
 
-            <Label Grid.Column="0" Text="Пн" HorizontalOptions="Center" FontAttributes="Bold"/>
-            <Label Grid.Column="1" Text="Вт" HorizontalOptions="Center" FontAttributes="Bold"/>
-            <Label Grid.Column="2" Text="Ср" HorizontalOptions="Center" FontAttributes="Bold"/>
-            <Label Grid.Column="3" Text="Чт" HorizontalOptions="Center" FontAttributes="Bold"/>
-            <Label Grid.Column="4" Text="Пт" HorizontalOptions="Center" FontAttributes="Bold"/>
-            <Label Grid.Column="5" Text="Сб" HorizontalOptions="Center" FontAttributes="Bold" TextColor="Red"/>
-            <Label Grid.Column="6" Text="Вс" HorizontalOptions="Center" FontAttributes="Bold" TextColor="Red"/>
+            <Label Grid.Column="0" Text="{x:Static resources:AppResources.Monday}" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="1" Text="{x:Static resources:AppResources.Tuesday}" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="2" Text="{x:Static resources:AppResources.Wednesday}" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="3" Text="{x:Static resources:AppResources.Thursday}" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="4" Text="{x:Static resources:AppResources.Friday}" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <Label Grid.Column="5" Text="{x:Static resources:AppResources.Saturday}" HorizontalOptions="Center" FontAttributes="Bold" TextColor="Red"/>
+            <Label Grid.Column="6" Text="{x:Static resources:AppResources.Sunday}" HorizontalOptions="Center" FontAttributes="Bold" TextColor="Red"/>
 
         </Grid>
 
@@ -67,6 +68,56 @@
                                  HorizontalItemSpacing="1"
                                  VerticalItemSpacing="1"/>
             </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="5"
+                           BorderColor="LightGray"
+                           CornerRadius="5"
+                           BackgroundColor="Transparent"
+                           HasShadow="False"
+                           HeightRequest="60"
+                           WidthRequest="60"
+                           Margin="2">
+
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectDayCommand}"
+                                CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+
+                        <Grid RowDefinitions="*, Auto">
+
+                            <Frame Grid.Row="0"
+                                   BackgroundColor="{Binding IsToday, Converter={StaticResource BoolToColorConverter}}"
+                                   CornerRadius="20"
+                                   Padding="0"
+                                   Margin="2"
+                                   HeightRequest="36"
+                                   WidthRequest="36"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center">
+
+                                <Label Text="{Binding DayNumber}"
+                                       FontSize="16"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="{Binding IsCurrentMonth, Converter={StaticResource MonthToTextColorConverter}}"/>
+
+                            </Frame>
+
+                            <Label Grid.Row="1"
+                                   Text="{Binding TaskCount}"
+                                   FontSize="11"
+                                   TextColor="Blue"
+                                   HorizontalOptions="Center"
+                                   IsVisible="{Binding TaskCount, Converter={StaticResource IntToVisibilityConverter}}"/>
+
+                        </Grid>
+
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
 
         </CollectionView>
 

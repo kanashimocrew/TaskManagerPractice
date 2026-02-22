@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.Maui.Controls;
 using TaskManager.ViewModels;
 
 namespace TaskManager.Views

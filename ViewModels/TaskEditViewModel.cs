@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Microsoft.Maui.Controls;
+﻿using System.Windows.Input;
 using TaskManager.Models;
 using TaskManager.Services;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.ViewModels
 {
@@ -182,20 +179,20 @@ namespace TaskManager.ViewModels
         {
             PriorityOptions = new List<string>
             {
-                "Низкий",
-                "Средний",
-                "Высокий"
+                AppResources.PriorityLow,
+                AppResources.PriorityMedium,
+                AppResources.PriorityHigh
             };
         }
 
         public void UpdatePageTitle()
         {
-            PageTitle = IsNewTask ? "Новая задача" : "Редактирование задачи";
+            PageTitle = IsNewTask ? AppResources.NewTaskPageTitle : AppResources.EditTaskPageTitle;
         }
 
         public void UpdateSaveButtonText()
         {
-            SaveButtonText = IsNewTask ? "Создать" : "Сохранить";
+            SaveButtonText = IsNewTask ? AppResources.AddButton : AppResources.SaveButton;
         }
 
         private TaskPriority GetPriorityFromIndex(int index)
@@ -241,8 +238,8 @@ namespace TaskManager.ViewModels
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"Не удалось загрузить задачу: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                    $"Не удалось загрузить задачу: {ex.Message}", AppResources.Ok);
             }
         }
 
@@ -274,17 +271,17 @@ namespace TaskManager.ViewModels
 
                 if (string.IsNullOrWhiteSpace(Title))
                 {
-                    await Application.Current.MainPage.DisplayAlert("Ошибка",
-                        "Пожалуйста, введите название задачи", "OK");
+                    await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                        AppResources.Validation_TitleRequired, AppResources.Ok);
                     return;
                 }
 
                 var dueDateTime = DueDate.Add(DueTime);
                 if (dueDateTime < DateTime.Now.AddMinutes(-5))
                 {
-                    bool confirm = await Application.Current.MainPage.DisplayAlert("Подтверждение",
-                        "Выбранная дата уже прошла. Вы уверены, что хотите сохранить задачу с прошедшей датой?",
-                        "Сохранить", "Отмена");
+                    bool confirm = await Application.Current.MainPage.DisplayAlert(AppResources.Warning,
+                        AppResources.Validation_DateInPast,
+                        AppResources.SaveButton, AppResources.CancelButton);
 
                     if (!confirm) return;
                 }
@@ -322,14 +319,14 @@ namespace TaskManager.ViewModels
                 }
                 else
                 {
-                    await Application.Current.MainPage.DisplayAlert("Ошибка",
-                        "Не удалось сохранить задачу", "OK");
+                    await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                        "Не удалось сохранить задачу", AppResources.Ok);
                 }
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"Не удалось сохранить задачу: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                    $"Не удалось сохранить задачу: {ex.Message}", AppResources.Ok);
             }
             finally
             {
@@ -341,9 +338,9 @@ namespace TaskManager.ViewModels
         {
             if (HasChanges)
             {
-                bool save = await Application.Current.MainPage.DisplayAlert("Сохранение",
-                    "У вас есть несохраненные изменения. Хотите сохранить перед выходом?",
-                    "Сохранить", "Не сохранять");
+                bool save = await Application.Current.MainPage.DisplayAlert(AppResources.UnsavedChangesTitle,
+                    AppResources.UnsavedChangesMessage,
+                    AppResources.SaveButton, AppResources.CancelButton);
 
                 if (save)
                 {

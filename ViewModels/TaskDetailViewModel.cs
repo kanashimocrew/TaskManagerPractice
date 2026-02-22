@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Microsoft.Maui.Controls;
+﻿using System.Windows.Input;
 using TaskManager.Models;
 using TaskManager.Services;
+using TaskManager.Resources.Localization;
 
 namespace TaskManager.ViewModels
 {
@@ -181,17 +178,17 @@ namespace TaskManager.ViewModels
         {
             PriorityOptions = new List<string>
             {
-                "Низкий",
-                "Средний",
-                "Высокий"
+                AppResources.PriorityLow,
+                AppResources.PriorityMedium,
+                AppResources.PriorityHigh
             };
 
             StatusOptions = new List<string>
             {
-                "Новая",
-                "В работе",
-                "Выполнена",
-                "Отменена"
+                AppResources.StatusNew,
+                AppResources.StatusInProgress,
+                AppResources.StatusCompleted,
+                AppResources.StatusCancelled
             };
         }
 
@@ -225,8 +222,8 @@ namespace TaskManager.ViewModels
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"Не удалось загрузить задачу: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                    $"Не удалось загрузить задачу: {ex.Message}", AppResources.Ok);
             }
         }
 
@@ -257,17 +254,17 @@ namespace TaskManager.ViewModels
         {
             if (string.IsNullOrWhiteSpace(EditTitle))
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    "Пожалуйста, введите название задачи", "OK");
+                await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                    AppResources.Validation_TitleRequired, AppResources.Ok);
                 return;
             }
 
             var dueDateTime = EditDueDate.Add(EditDueTime);
             if (dueDateTime < DateTime.Now.AddMinutes(-5))
             {
-                bool confirm = await Application.Current.MainPage.DisplayAlert("Подтверждение",
-                    "Выбранная дата уже прошла. Вы уверены?",
-                    "Сохранить", "Отмена");
+                bool confirm = await Application.Current.MainPage.DisplayAlert(AppResources.Warning,
+                    AppResources.Validation_DateInPast,
+                    AppResources.SaveButton, AppResources.CancelButton);
 
                 if (!confirm) return;
             }
@@ -297,8 +294,8 @@ namespace TaskManager.ViewModels
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"Не удалось сохранить изменения: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                    $"Не удалось сохранить изменения: {ex.Message}", AppResources.Ok);
             }
         }
 
@@ -306,9 +303,11 @@ namespace TaskManager.ViewModels
         {
             if (Task == null) return;
 
-            bool confirm = await Application.Current.MainPage.DisplayAlert("Подтверждение",
-                $"Вы уверены, что хотите удалить задачу \"{Task.Title}\"?",
-                "Удалить", "Отмена");
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                AppResources.ConfirmDeleteTitle,
+                string.Format(AppResources.ConfirmDeleteMessage, Task.Title),
+                AppResources.DeleteButton,
+                AppResources.CancelButton);
 
             if (confirm)
             {
@@ -322,8 +321,8 @@ namespace TaskManager.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Ошибка",
-                        $"Не удалось удалить задачу: {ex.Message}", "OK");
+                    await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                        $"Не удалось удалить задачу: {ex.Message}", AppResources.Ok);
                 }
             }
         }
@@ -332,9 +331,9 @@ namespace TaskManager.ViewModels
         {
             if (IsEditing && HasChanges())
             {
-                bool save = await Application.Current.MainPage.DisplayAlert("Сохранение",
-                    "У вас есть несохраненные изменения. Хотите сохранить перед выходом?",
-                    "Сохранить", "Не сохранять");
+                bool save = await Application.Current.MainPage.DisplayAlert(AppResources.UnsavedChangesTitle,
+                    AppResources.UnsavedChangesMessage,
+                    AppResources.SaveButton, AppResources.CancelButton);
 
                 if (save)
                 {

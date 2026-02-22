@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+ 
+  <data name="ApplicationTitle" xml:space="preserve">
+    <value>Менеджер задач</value>
+  </data>
+  <data name="CalendarPageTitle" xml:space="preserve">
+    <value>Календарь</value>
+  </data>
+  <data name="TasksPageTitle" xml:space="preserve">
+    <value>Задачи на {0}</value>
+  </data>
+  <data name="TaskDetailPageTitle" xml:space="preserve">
+    <value>Детали задачи</value>
+  </data>
+  <data name="NewTaskPageTitle" xml:space="preserve">
+    <value>Новая задача</value>
+  </data>
+  <data name="EditTaskPageTitle" xml:space="preserve">
+    <value>Редактирование задачи</value>
+  </data>
+
+  <data name="AddButton" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="SaveButton" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="CancelButton" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="DeleteButton" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="EditButton" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="BackButton" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+
+  <data name="TaskTitleLabel" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="TaskDescriptionLabel" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="TaskDueDateLabel" xml:space="preserve">
+    <value>Дата выполнения</value>
+  </data>
+  <data name="TaskPriorityLabel" xml:space="preserve">
+    <value>Приоритет</value>
+  </data>
+  <data name="TaskStatusLabel" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+
+  <data name="PriorityLow" xml:space="preserve">
+    <value>Низкий</value>
+  </data>
+  <data name="PriorityMedium" xml:space="preserve">
+    <value>Средний</value>
+  </data>
+  <data name="PriorityHigh" xml:space="preserve">
+    <value>Высокий</value>
+  </data>
+  <data name="PriorityNone" xml:space="preserve">
+    <value>Без приоритета</value>
+  </data>
+
+  <data name="StatusNew" xml:space="preserve">
+    <value>Новая</value>
+  </data>
+  <data name="StatusInProgress" xml:space="preserve">
+    <value>В работе</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>Выполнена</value>
+  </data>
+  <data name="StatusCancelled" xml:space="preserve">
+    <value>Отменена</value>
+  </data>
+
+  <data name="Today" xml:space="preserve">
+    <value>Сегодня</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>Вчера</value>
+  </data>
+  <data name="Tomorrow" xml:space="preserve">
+    <value>Завтра</value>
+  </data>
+  <data name="At" xml:space="preserve">
+    <value>в</value>
+  </data>
+
+  <data name="NoTasksMessage" xml:space="preserve">
+    <value>На этот день задач нет</value>
+  </data>
+  <data name="NoDescription" xml:space="preserve">
+    <value>Нет описания</value>
+  </data>
+
+  <data name="ConfirmDeleteTitle" xml:space="preserve">
+    <value>Подтверждение удаления</value>
+  </data>
+  <data name="ConfirmDeleteMessage" xml:space="preserve">
+    <value>Вы уверены, что хотите удалить задачу "{0}"?</value>
+  </data>
+
+  <data name="Ok" xml:space="preserve">
+    <value>ОК</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Успех</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Предупреждение</value>
+  </data>
+
+  <data name="Validation_TitleRequired" xml:space="preserve">
+    <value>Название обязательно для заполнения</value>
+  </data>
+  <data name="Validation_DateInPast" xml:space="preserve">
+    <value>Выбранная дата уже прошла. Вы уверены, что хотите сохранить?</value>
+  </data>
+
+  <data name="UnsavedChangesTitle" xml:space="preserve">
+    <value>Несохраненные изменения</value>
+  </data>
+  <data name="UnsavedChangesMessage" xml:space="preserve">
+    <value>У вас есть несохраненные изменения. Сохранить перед выходом?</value>
+  </data>
+
+  <data name="Monday" xml:space="preserve">
+    <value>Пн</value>
+  </data>
+  <data name="Tuesday" xml:space="preserve">
+    <value>Вт</value>
+  </data>
+  <data name="Wednesday" xml:space="preserve">
+    <value>Ср</value>
+  </data>
+  <data name="Thursday" xml:space="preserve">
+    <value>Чт</value>
+  </data>
+  <data name="Friday" xml:space="preserve">
+    <value>Пт</value>
+  </data>
+  <data name="Saturday" xml:space="preserve">
+    <value>Сб</value>
+  </data>
+  <data name="Sunday" xml:space="preserve">
+    <value>Вс</value>
+  </data>
+
+  <data name="January" xml:space="preserve">
+    <value>Январь</value>
+  </data>
+  <data name="February" xml:space="preserve">
+    <value>Февраль</value>
+  </data>
+  <data name="March" xml:space="preserve">
+    <value>Март</value>
+  </data>
+  <data name="April" xml:space="preserve">
+    <value>Апрель</value>
+  </data>
+  <data name="May" xml:space="preserve">
+    <value>Май</value>
+  </data>
+  <data name="June" xml:space="preserve">
+    <value>Июнь</value>
+  </data>
+  <data name="July" xml:space="preserve">
+    <value>Июль</value>
+  </data>
+  <data name="August" xml:space="preserve">
+    <value>Август</value>
+  </data>
+  <data name="September" xml:space="preserve">
+    <value>Сентябрь</value>
+  </data>
+  <data name="October" xml:space="preserve">
+    <value>Октябрь</value>
+  </data>
+  <data name="November" xml:space="preserve">
+    <value>Ноябрь</value>
+  </data>
+  <data name="December" xml:space="preserve">
+    <value>Декабрь</value>
+  </data>
+    <data name="TaskDetailsLabel" xml:space="preserve">
+    <value>Детали задачи</value>
+  </data>
+  <data name="TaskTimeLabel" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="StatusButton" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>Создана</value>
+  </data>
+  <data name="UpdatedAt" xml:space="preserve">
+    <value>Обновлена</value>
+  </data>
+  <data name="NotUpdated" xml:space="preserve">
+    <value>Не обновлялась</value>
+  </data>
+</root>
