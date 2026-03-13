@@ -2,14 +2,14 @@
 
 namespace TaskManager.Converters
 {
-    public class BoolToColorConverter : IValueConverter
+    public class BoolToBorderColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is bool boolValue && boolValue)
-                return Color.FromArgb("#512DA8"); 
+                return Color.FromArgb("#512DA8");
 
-            return Color.FromArgb("#E0E0E0"); 
+            return Colors.Transparent;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

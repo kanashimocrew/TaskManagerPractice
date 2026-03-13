@@ -1,3 +1,4 @@
+using System;
 using SQLite;
 
 namespace TaskManager.Models
@@ -26,12 +27,15 @@ namespace TaskManager.Models
 
         public bool IsDeleted { get; set; }
 
+        [Ignore]
+        public bool IsSelected { get; set; }
+
         public TaskItem()
         {
             CreatedAt = DateTime.Now;
             Status = TaskStatus.New;
             Priority = TaskPriority.Medium;
-            DueDate = DateTime.Now.Date.AddHours(9); // По дефолту на 9 утра
+            DueDate = DateTime.Now.Date.AddHours(9);
         }
     }
 }

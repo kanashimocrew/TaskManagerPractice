@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:TaskManager.ViewModels"
              xmlns:converters="clr-namespace:TaskManager.Converters"
+             xmlns:viewmodels="clr-namespace:TaskManager.ViewModels"
              xmlns:resources="clr-namespace:TaskManager.Resources.Localization"
              x:Class="TaskManager.Views.TaskListPage"
              Title="{Binding PageTitle}">
+
     <ContentPage.BindingContext>
         <viewmodels:TaskListViewModel />
     </ContentPage.BindingContext>
@@ -18,6 +19,7 @@
             <converters:DateTimeToStringConverter x:Key="DateTimeToString" />
             <converters:PriorityTextConverter x:Key="PriorityTextConverter" />
             <converters:StatusTextConverter x:Key="StatusTextConverter" />
+            <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -30,9 +32,78 @@
                           HeightRequest="50"
                           WidthRequest="50"/>
 
-        <Grid IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
+        <Grid IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}"
+              RowDefinitions="Auto, Auto, *, Auto">
 
-            <Label Text="{x:Static resources:AppResources.NoTasksMessage}"
+            <Grid Grid.Row="0" Padding="10" ColumnDefinitions="Auto, *, Auto">
+
+                <Button Grid.Column="0"
+                        Text="{Binding IsSelectionModeText}"
+                        Command="{Binding ToggleSelectionModeCommand}"
+                        BackgroundColor="{Binding IsSelectionMode, Converter={StaticResource BoolToColorConverter}}"
+                        TextColor="{Binding IsSelectionMode, Converter={StaticResource BoolToTextColorConverter}}"
+                        Margin="0,0,10,0"
+                        HeightRequest="40"/>
+
+                <Frame Grid.Column="1"
+                       Padding="0"
+                       CornerRadius="20"
+                       BorderColor="LightGray"
+                       HeightRequest="40">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label Grid.Column="0"
+                               Text="🔍"
+                               FontSize="18"
+                               VerticalOptions="Center"
+                               Margin="10,0,5,0"/>
+                        <Entry Grid.Column="1"
+                               Text="{Binding SearchText}"
+                               Placeholder="Поиск задач..."
+                               FontSize="16"
+                               ClearButtonVisibility="WhileEditing"
+                               VerticalOptions="Center"/>
+                    </Grid>
+                </Frame>
+
+                <Button Grid.Column="2"
+                        Text="+"
+                        Command="{Binding NavigateToCreateTaskCommand}"
+                        FontSize="20"
+                        WidthRequest="40"
+                        HeightRequest="40"
+                        CornerRadius="20"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        Margin="10,0,0,0"/>
+            </Grid>
+
+            <Grid Grid.Row="1"
+                  IsVisible="{Binding IsSelectionMode}"
+                  Padding="10"
+                  BackgroundColor="#F0F0F0"
+                  ColumnDefinitions="Auto, *, Auto">
+
+                <CheckBox Grid.Column="0"
+                          IsChecked="{Binding IsAllSelected}"
+                          VerticalOptions="Center"/>
+
+                <Label Grid.Column="1"
+                       Text="{Binding SelectedCount, StringFormat='Выбрано: {0}'}"
+                       VerticalOptions="Center"
+                       FontSize="14"/>
+
+                <Button Grid.Column="2"
+                        Text="Удалить выбранное"
+                        Command="{Binding DeleteSelectedTasksCommand}"
+                        IsEnabled="{Binding HasSelectedTasks}"
+                        BackgroundColor="{Binding HasSelectedTasks, Converter={StaticResource BoolToColorConverter}}"
+                        TextColor="White"
+                        HeightRequest="40"
+                        CornerRadius="10"/>
+            </Grid>
+
+            <Label Grid.Row="2"
+                   Text="{x:Static resources:AppResources.NoTasksMessage}"
                    IsVisible="{Binding HasTasks, Converter={StaticResource InverseBoolConverter}}"
                    HorizontalOptions="Center"
                    VerticalOptions="Center"
@@ -40,19 +111,14 @@
                    TextColor="Gray"
                    Margin="20"/>
 
-            <RefreshView IsRefreshing="{Binding IsLoading}"
-                        Command="{Binding LoadTasksCommand}">
+            <RefreshView Grid.Row="2"
+                        IsRefreshing="{Binding IsLoading}"
+                        Command="{Binding LoadTasksCommand}"
+                        IsVisible="{Binding HasTasks}">
 
                 <CollectionView ItemsSource="{Binding Tasks}"
-                              SelectionMode="None">
-
-                    <CollectionView.EmptyView>
-                        <Label Text="{x:Static resources:AppResources.NoTasksMessage}"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               FontSize="18"
-                               TextColor="Gray"/>
-                    </CollectionView.EmptyView>
+                              SelectionMode="None"
+                              Margin="0,5,0,0">
 
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
@@ -89,7 +155,8 @@
                                        CornerRadius="10"
                                        HasShadow="True"
                                        Margin="10,5"
-                                       BackgroundColor="{Binding Priority, Converter={StaticResource PriorityToColor}}">
+                                       BackgroundColor="{Binding Priority, Converter={StaticResource PriorityToColor}}"
+                                       BorderColor="{Binding IsSelected, Converter={StaticResource BoolToBorderColorConverter}}">
 
                                     <Frame.GestureRecognizers>
                                         <TapGestureRecognizer 
@@ -100,28 +167,35 @@
                                     <Grid ColumnDefinitions="Auto, *, Auto"
                                           RowDefinitions="Auto, Auto">
 
-                                        <Label Grid.Column="0"
+                                        <CheckBox Grid.Column="0"
+                                                  Grid.RowSpan="2"
+                                                  IsVisible="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TaskListViewModel}}, Path=IsSelectionMode}"
+                                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                  VerticalOptions="Center"
+                                                  Margin="0,0,10,0"/>
+
+                                        <Label Grid.Column="1"
                                                Grid.RowSpan="2"
                                                Text="{Binding Status, Converter={StaticResource StatusToIcon}}"
                                                FontSize="24"
                                                VerticalOptions="Center"
                                                Margin="0,0,10,0"/>
 
-                                        <Label Grid.Column="1"
+                                        <Label Grid.Column="2"
                                                Grid.Row="0"
                                                Text="{Binding Title}"
                                                FontSize="16"
                                                FontAttributes="Bold"
                                                LineBreakMode="TailTruncation"/>
 
-                                        <Label Grid.Column="1"
+                                        <Label Grid.Column="2"
                                                Grid.Row="1"
                                                Text="{Binding DueDate, Converter={StaticResource DateTimeToString}}"
                                                FontSize="14"
                                                TextColor="Gray"
                                                Margin="0,5,0,0"/>
 
-                                        <Label Grid.Column="2"
+                                        <Label Grid.Column="3"
                                                Grid.RowSpan="2"
                                                Text="{Binding Priority, Converter={StaticResource PriorityTextConverter}}"
                                                FontSize="12"
@@ -142,19 +216,21 @@
 
             </RefreshView>
 
-        </Grid>
+            <Button Grid.Row="3"
+                    Text="+"
+                    Command="{Binding NavigateToCreateTaskCommand}"
+                    FontSize="24"
+                    WidthRequest="60"
+                    HeightRequest="60"
+                    CornerRadius="30"
+                    HorizontalOptions="End"
+                    VerticalOptions="End"
+                    Margin="20"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    IsVisible="{Binding HasTasks}"/>
 
-        <Button Text="+"
-                Command="{Binding NavigateToCreateTaskCommand}"
-                FontSize="24"
-                WidthRequest="60"
-                HeightRequest="60"
-                CornerRadius="30"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="20"
-                BackgroundColor="{StaticResource Primary}"
-                TextColor="White"/>
+        </Grid>
 
     </Grid>
 

@@ -13,6 +13,62 @@ namespace TaskManager.ViewModels
         private bool _isLoading;
         private bool _hasTasks;
         private string _pageTitle;
+        private string _searchText;
+        private List<TaskItem> _allTasks = new List<TaskItem>();
+        private bool _isSelectionMode;
+        private bool _isAllSelected;
+        private int _selectedCount;
+
+        // Поиск
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                {
+                    FilterTasks();
+                }
+            }
+        }
+
+        public bool IsSelectionMode
+        {
+            get => _isSelectionMode;
+            set
+            {
+                if (SetProperty(ref _isSelectionMode, value))
+                {
+                    if (!value)
+                    {
+                        ClearSelection();
+                    }
+                    OnPropertyChanged(nameof(IsSelectionModeText));
+                }
+            }
+        }
+
+        public string IsSelectionModeText => IsSelectionMode ? "Отменить" : "Выбрать";
+
+        public bool IsAllSelected
+        {
+            get => _isAllSelected;
+            set
+            {
+                if (SetProperty(ref _isAllSelected, value))
+                {
+                    SelectAllTasks(value);
+                }
+            }
+        }
+
+        public int SelectedCount
+        {
+            get => _selectedCount;
+            set => SetProperty(ref _selectedCount, value);
+        }
+
+        public bool HasSelectedTasks => SelectedCount > 0;
 
         public DateTime SelectedDate
         {
@@ -23,7 +79,7 @@ namespace TaskManager.ViewModels
                 {
                     _selectedDate = value;
                     OnPropertyChanged(nameof(SelectedDate));
-                    UpdatePageTitle(); 
+                    UpdatePageTitle();
                 }
             }
         }
@@ -61,12 +117,16 @@ namespace TaskManager.ViewModels
         }
 
         public ObservableCollection<TaskItem> Tasks { get; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> SelectedTasks { get; } = new ObservableCollection<TaskItem>();
 
         public ICommand LoadTasksCommand { get; }
         public ICommand DeleteTaskCommand { get; }
         public ICommand ChangeStatusCommand { get; }
         public ICommand NavigateToCreateTaskCommand { get; }
         public ICommand NavigateToTaskDetailCommand { get; }
+        public ICommand ToggleSelectionModeCommand { get; }
+        public ICommand DeleteSelectedTasksCommand { get; }
+        public ICommand SelectTaskCommand { get; }
 
         public TaskListViewModel() : this(new DatabaseService())
         {
@@ -81,11 +141,13 @@ namespace TaskManager.ViewModels
             UpdatePageTitle();
 
             LoadTasksCommand = new Command(async () => await LoadTasks());
-
             DeleteTaskCommand = new Command<TaskItem>(async (task) => await DeleteTask(task));
             ChangeStatusCommand = new Command<TaskItem>(async (task) => await ChangeStatus(task));
             NavigateToCreateTaskCommand = new Command(async () => await NavigateToCreateTask());
             NavigateToTaskDetailCommand = new Command<TaskItem>(async (task) => await NavigateToTaskDetail(task));
+            ToggleSelectionModeCommand = new Command(() => ToggleSelectionMode());
+            DeleteSelectedTasksCommand = new Command(async () => await DeleteSelectedTasks());
+            SelectTaskCommand = new Command<TaskItem>((task) => SelectTask(task));
 
             MessagingCenter.Subscribe<object>(this, "TaskSaved", (sender) =>
             {
@@ -120,14 +182,9 @@ namespace TaskManager.ViewModels
             try
             {
                 IsLoading = true;
-                Tasks.Clear();
+                _allTasks = await _databaseService.GetTasksByDateAsync(SelectedDate);
 
-                var taskList = await _databaseService.GetTasksByDateAsync(SelectedDate);
-
-                foreach (var task in taskList)
-                {
-                    Tasks.Add(task);
-                }
+                FilterTasks();
 
                 HasTasks = Tasks.Count > 0;
             }
@@ -139,6 +196,140 @@ namespace TaskManager.ViewModels
             finally
             {
                 IsLoading = false;
+            }
+        }
+
+        private void FilterTasks()
+        {
+            Tasks.Clear();
+
+            var filteredTasks = _allTasks;
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                filteredTasks = _allTasks
+                    .Where(t => t.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            foreach (var task in filteredTasks)
+            {
+                Tasks.Add(task);
+            }
+
+            HasTasks = Tasks.Count > 0;
+
+            UpdateSelectionStatus();
+        }
+
+        private void ToggleSelectionMode()
+        {
+            IsSelectionMode = !IsSelectionMode;
+        }
+
+        private void SelectTask(TaskItem task)
+        {
+            if (!IsSelectionMode) return;
+
+            if (SelectedTasks.Contains(task))
+            {
+                SelectedTasks.Remove(task);
+            }
+            else
+            {
+                SelectedTasks.Add(task);
+            }
+
+            SelectedCount = SelectedTasks.Count;
+            IsAllSelected = SelectedCount == Tasks.Count;
+            OnPropertyChanged(nameof(HasSelectedTasks));
+        }
+
+        private void SelectAllTasks(bool select)
+        {
+            if (select)
+            {
+                foreach (var task in Tasks)
+                {
+                    if (!SelectedTasks.Contains(task))
+                    {
+                        SelectedTasks.Add(task);
+                    }
+                }
+            }
+            else
+            {
+                SelectedTasks.Clear();
+            }
+
+            SelectedCount = SelectedTasks.Count;
+            OnPropertyChanged(nameof(HasSelectedTasks));
+        }
+
+        private void ClearSelection()
+        {
+            SelectedTasks.Clear();
+            SelectedCount = 0;
+            IsAllSelected = false;
+            OnPropertyChanged(nameof(HasSelectedTasks));
+        }
+
+        private void UpdateSelectionStatus()
+        {
+            if (!IsSelectionMode) return;
+
+            var tasksToRemove = SelectedTasks.Where(t => !Tasks.Contains(t)).ToList();
+            foreach (var task in tasksToRemove)
+            {
+                SelectedTasks.Remove(task);
+            }
+
+            SelectedCount = SelectedTasks.Count;
+            IsAllSelected = SelectedCount == Tasks.Count && Tasks.Count > 0;
+            OnPropertyChanged(nameof(HasSelectedTasks));
+        }
+
+        private async Task DeleteSelectedTasks()
+        {
+            if (SelectedTasks.Count == 0) return;
+
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Подтверждение удаления",
+                $"Вы уверены, что хотите удалить {SelectedTasks.Count} задач?",
+                "Удалить",
+                "Отмена");
+
+            if (confirm)
+            {
+                try
+                {
+                    IsLoading = true;
+
+                    foreach (var task in SelectedTasks.ToList())
+                    {
+                        await _databaseService.DeleteTaskAsync(task);
+                        Tasks.Remove(task);
+                        _allTasks.Remove(task);
+                    }
+
+                    SelectedTasks.Clear();
+                    SelectedCount = 0;
+                    IsAllSelected = false;
+                    HasTasks = Tasks.Count > 0;
+
+                    OnPropertyChanged(nameof(HasSelectedTasks));
+
+                    IsSelectionMode = false;
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert(AppResources.Error,
+                        $"Не удалось удалить задачи: {ex.Message}", AppResources.Ok);
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
             }
         }
 
@@ -158,6 +349,7 @@ namespace TaskManager.ViewModels
                 {
                     await _databaseService.DeleteTaskAsync(task);
                     Tasks.Remove(task);
+                    _allTasks.Remove(task);
                     HasTasks = Tasks.Count > 0;
                 }
                 catch (Exception ex)
@@ -192,6 +384,12 @@ namespace TaskManager.ViewModels
                 {
                     Tasks[index] = task;
                 }
+
+                int allIndex = _allTasks.FindIndex(t => t.Id == task.Id);
+                if (allIndex >= 0)
+                {
+                    _allTasks[allIndex] = task;
+                }
             }
             catch (Exception ex)
             {
@@ -208,6 +406,13 @@ namespace TaskManager.ViewModels
         private async Task NavigateToTaskDetail(TaskItem task)
         {
             if (task == null) return;
+
+            if (IsSelectionMode)
+            {
+                SelectTask(task);
+                return;
+            }
+
             await Services.NavigationService.NavigateToTaskDetail(task.Id);
         }
     }

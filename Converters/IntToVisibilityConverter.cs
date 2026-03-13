@@ -10,12 +10,6 @@ namespace TaskManager.Converters
             {
                 return count > 0;
             }
-
-            if (value is string text && int.TryParse(text, out int parsedCount))
-            {
-                return parsedCount > 0;
-            }
-
             return false;
         }
 
